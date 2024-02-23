@@ -45,9 +45,70 @@ abstract sig Position {
     ante: int,
 }
 
+// need to figure out how to set players to each position and rotate them through the game. maybe add a position field to player sig?
 one sig SmallBlind, BigBlind, Regular extends Position {}
 
 sig Chip {
     // the chips
     amount: int,
+}
+
+pred init {
+    // Implement logic for initializing the game
+}
+
+pred nextRoundState {
+    // Implement logic for transitioning to the next state
+}
+
+pred nextRound {
+    // Implement logic for transitioning to the next round
+}
+
+pred dealCards {
+    // Implement logic for dealing the cards
+}
+
+pred playerFolds {
+    // Implement logic for player folding
+}
+
+pred playerChecks {
+    // Implement logic for player checking
+}
+
+pred playerBets {
+    // Implement logic for player betting
+}
+
+pred playerCalls {
+    // Implement logic for player calling
+}
+
+pred playerRaises {
+    // Implement logic for player raising
+}
+
+pred playerAllIns {
+    // Implement logic for player going all in
+}
+
+pred playerLeaves {
+    // Implement logic for player leaving the game
+}
+
+pred evaluateHand {
+    // Implement logic for evaluating the hand
+}
+
+pred findRoundWinner {
+    // Implement logic for finding the round winner
+}
+
+pred isRoundFinished {
+    // Implement logic for checking if the round is finished
+}
+
+pred isGameFinished {
+    // Implement logic for checking if the game is finished
 }
