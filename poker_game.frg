@@ -4,6 +4,9 @@ sig GameState {
     // the state of the game
     players: set Player,
     roundState: RoundState,
+    deck: set Card,
+    buyIn: int,
+    ante: int,
 }
 
 abstract sig RoundState {
@@ -55,13 +58,18 @@ abstract sig Position {
 // need to figure out how to set players to each position and rotate them through the game. maybe add a position field to player sig?
 one sig SmallBlind, BigBlind, Regular extends Position {}
 
+// better to have many seperate types of chips defined in sig or have them just all be int's? something to figure out before coding init.
 sig Chip {
     // the chips
     amount: int,
 }
 
-pred init {
+pred initGame {
     // Implement logic for initializing the game
+}
+
+pred initRound {
+    // Implement logic for initializing the round
 }
 
 pred nextRoundState {
