@@ -74,8 +74,15 @@ pred playerFolds {
     // Implement logic for player folding
 }
 
+pred playerCanCheck[player: Player, state: State] {
+    // Implement logic for checking if the player can check
+}
+
 pred playerChecks {
     // Implement logic for player checking
+    some p : Player | some s : State | (playerCanCheck[p, s]) {
+        p.bet = p.bet
+    }
 }
 
 pred playerBets {
