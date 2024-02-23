@@ -1,4 +1,4 @@
-// file for game/actual stuff to happen
+#lang forge/bsl
 
 abstract sig State {
     // the state of the game
