@@ -80,7 +80,7 @@ pred playerFolds {
     // Implement logic for player folding
 }
 
-pred playerCanCheck[player: Player, roundState: RoundState] {
+pred playerCanCheck[player : Player, roundState : RoundState] {
     // Implement logic for checking if the player can check
 }
 
