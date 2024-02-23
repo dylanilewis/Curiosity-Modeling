@@ -1,16 +1,22 @@
 #lang forge/bsl
 
-abstract sig State {
+sig GameState {
+    // the state of the game
+    players: set Player,
+    roundState: RoundState,
+}
+
+abstract sig RoundState {
     // the state of the game
     players: set Player,
     remainingDeck: set Card,
     board: set Card,
     pot: int,
     highestBet: int,
-}
+}   
 
 // states of the game
-one sig preFlop, postFlop, postTurn, postRiver extends State {}
+one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
 
 sig suit {
     // the suit of the card
@@ -74,13 +80,13 @@ pred playerFolds {
     // Implement logic for player folding
 }
 
-pred playerCanCheck[player: Player, state: State] {
+pred playerCanCheck[player: Player, roundState: RoundState] {
     // Implement logic for checking if the player can check
 }
 
 pred playerChecks {
     // Implement logic for player checking
-    some p : Player | some s : State | (playerCanCheck[p, s]) {
+    some p : Player | some s : RoundState | (playerCanCheck[p, s]) {
         p.bet = p.bet
     }
 }
@@ -99,7 +105,7 @@ pred playerRaises {
 
 pred playerAllIns {
     // Implement logic for player going all in
-    some p : Player | some s : State | (p.chips.amount > 0) {
+    some p : Player | some s : RoundState | (p.chips.amount > 0) {
         p.bet = p.bet + p.chips.amount
         p.chips.amount = 0
         s.pot = s.pot + p.bet
@@ -108,6 +114,9 @@ pred playerAllIns {
 
 pred playerLeaves {
     // Implement logic for player leaving the game
+    some p : Player | some s : GameState | {
+        s.players = s.players - p
+    }
 }
 
 pred evaluateHand {
