@@ -6,6 +6,7 @@ abstract sig State {
     remainingDeck: set Card,
     board: set Card,
     pot: int,
+    highestBet: int,
 }
 
 // states of the game
@@ -91,6 +92,11 @@ pred playerRaises {
 
 pred playerAllIns {
     // Implement logic for player going all in
+    some p : Player | some s : State | (p.chips.amount > 0) {
+        p.bet = p.bet + p.chips.amount
+        p.chips.amount = 0
+        s.pot = s.pot + p.bet
+    }
 }
 
 pred playerLeaves {
