@@ -86,6 +86,9 @@ pred dealCards {
 
 pred playerFolds {
     // Implement logic for player folding
+    some p : Player | some s : RoundState | {
+        s.players = s.players - p
+    }
 }
 
 pred playerCanCheck[p : Player, r : RoundState] {
