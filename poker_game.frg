@@ -91,14 +91,9 @@ pred playerFolds {
     }
 }
 
-pred playerCanCheck[p : Player, r : RoundState] {
-    // Implement logic for checking if the player can check
-    p.bet = r.highestBet
-}
-
 pred playerChecks {
     // Implement logic for player checking
-    some p : Player | some s : RoundState | (playerCanCheck[p, s]) {
+    some p : Player | some s : RoundState | (p.bet = s.highestBet) {
         p.bet = p.bet
     }
 }
