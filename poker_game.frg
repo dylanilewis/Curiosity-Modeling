@@ -88,8 +88,9 @@ pred playerFolds {
     // Implement logic for player folding
 }
 
-pred playerCanCheck[player : Player, roundState : RoundState] {
+pred playerCanCheck[p : Player, r : RoundState] {
     // Implement logic for checking if the player can check
+    p.bet = r.highestBet
 }
 
 pred playerChecks {
@@ -99,18 +100,26 @@ pred playerChecks {
     }
 }
 
-pred playerBets {
-    // Implement logic for player betting
-}
-
 pred playerCalls {
     // Implement logic for player calling
+    some p : Player | some s : RoundState | (p.chips.amount > 0) {
+        p.bet = s.highestBet
+        p.chips.amount = p.chips.amount - s.highestBet + p.bet
+        s.pot = s.pot + s.highestBet - p.bet
+    }
 }
 
 pred playerRaises {
     // Implement logic for player raising
+    some p : Player | some s : RoundState | some i : Int | (p.chips.amount > 0) and (i > s.highestBet) {
+        p.bet = i
+        p.chips.amount = p.chips.amount - i
+        s.pot = s.pot + i
+        s.highestBet = i
+    }
 }
 
+// handle split pots eventually for final project
 pred playerAllIns {
     // Implement logic for player going all in
     some p : Player | some s : RoundState | (p.chips.amount > 0) {
