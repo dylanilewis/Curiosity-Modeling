@@ -83,6 +83,14 @@ pred nextRoundState {
 
 pred nextRound {
     // Implement logic for transitioning to the next round
+    all g : GameState | r : RoundState | (isRoundFinished) {
+        g.roundState = preFlop
+        r.players = g.players
+        r.remainingDeck = g.deck
+        r.board = {}
+        r.pot = 0
+        r.highestBet = 0
+    }
 }
 
 pred dealCards {
