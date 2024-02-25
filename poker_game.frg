@@ -74,6 +74,11 @@ pred initRound {
 
 pred nextRoundState {
     // Implement logic for transitioning to the next state
+    all p : Player | g : GameState | r : RoundState | (p.bet = r.highestBet) {
+        g.roundState = preFlop implies g.roundState = postFlop
+        g.roundState = postFlop implies g.roundState = postTurn
+        g.roundState = postTurn implies g.roundState = postRiver
+    }
 }
 
 pred nextRound {
@@ -140,6 +145,9 @@ pred evaluateHand {
 
 pred findRoundWinner {
     // Implement logic for finding the round winner
+    /*
+    for loop through players calling evaluate hand. Whoever has the highest value wins, pot goes to them.
+    */
 }
 
 pred isRoundFinished {
