@@ -81,6 +81,7 @@ pred nextRoundState {
     }
 }
 
+// prolly needs to be redone when more stuff figured out
 pred nextRound {
     // Implement logic for transitioning to the next round
     all g : GameState | r : RoundState | (isRoundFinished) {
