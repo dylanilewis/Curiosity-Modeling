@@ -92,6 +92,10 @@ pred nextRound {
         r.pot = 0
         r.highestBet = 0
     }
+    all p : Player | {
+        p.bet = 0
+        p.hand = {}
+    }
 }
 
 pred dealCards {
