@@ -74,6 +74,7 @@ pred initRound {
     dealCards
 }
 
+// need to figure out how to make dealer do the actions associated with each state
 pred nextRoundState {
     // Implement logic for transitioning to the next state
     all p : Player | g : GameState | r : RoundState | (p.bet = r.highestBet) {
@@ -101,6 +102,10 @@ pred nextRound {
 
 pred dealCards {
     // Implement logic for dealing the cards
+    all p : Player | all r : RoundState | (r = preFlop) and (#p.hand < 2) {
+        p.hand = p.hand + r.remainingDeck.first
+        r.remainingDeck = r.remainingDeck - r.remainingDeck.first
+    }
 }
 
 pred playerFolds {
