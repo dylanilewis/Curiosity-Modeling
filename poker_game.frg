@@ -1,13 +1,5 @@
 #lang forge/bsl
 
-sig GameState {
-    // the state of the game
-    players: set Player,
-    roundState: RoundState,
-    deck: set Card,
-    buyIn: int,
-    ante: int,
-}
 
 abstract sig RoundState {
     // the state of the game
@@ -16,7 +8,16 @@ abstract sig RoundState {
     board: set Card,
     pot: int,
     highestBet: int,
-}   
+}  
+
+sig GameState {
+    // the state of the game
+    players: set Player,
+    roundState: RoundState,
+    deck: set Card,
+    buyIn: int,
+    ante: int,
+} 
 
 // states of the game
 one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
@@ -39,7 +40,7 @@ sig Card {
 
 sig Hand {
     // the hand of a player
-    cards: set card,
+    cards: set Card,
 }
 
 sig Player {
@@ -66,6 +67,11 @@ sig Chip {
 
 pred initGame {
     // Implement logic for initializing the game
+}
+
+pred initDeck {
+    // Implement logic for initializing the deck
+
 }
 
 pred initRound {
@@ -156,6 +162,51 @@ pred playerLeaves {
     some p : Player | some s : GameState | {
         s.players = s.players - p
     }
+}
+
+pred winRaiseNotCalled {
+    // Implement logic for winning the pot if your raise is not called
+    #s.players = 1
+}
+
+pred hasPair {
+    //see if a player has a pair in his hand
+    some r: RoundState | some p: Player {
+        newSet = r.board + p.hand
+        #
+    }
+}
+
+pred hasTwoPair{
+
+}
+
+pred hasFullHouse{
+
+}
+
+pred hasStraight{
+
+}
+
+pred hasFlush{
+
+}
+
+pred hasRoyalFlush{
+
+}
+
+pred hasFourOfaKind{
+
+}
+
+pred hasThreeofaKind{
+
+}
+
+pred hasStraightFlush{
+
 }
 
 pred evaluateHand {
