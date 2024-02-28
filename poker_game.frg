@@ -21,12 +21,12 @@ abstract sig RoundState {
 // states of the game
 one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
 
-sig suit {
+sig Suit {
     // the suit of the card
     suit: one of Spades, Hearts, Diamonds, Clubs,
 }
 
-sig value {
+sig Value {
     // the value of the card
     value: one of Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace,
 }
@@ -165,42 +165,68 @@ pred winRaiseNotCalled {
 
 pred hasPair {
     //see if a player has a pair in his hand
-    some r: RoundState | some p: Player {
-        newSet = r.board + p.hand
-        #
+    some r : RoundState | some p : Player | some value : Value | {
+        hand = r.board + p.hand
+        #(hand.card.value = value) = 2
     }
 }
 
 pred hasTwoPair{
-
+    some r : RoundState | some p : Player | some value1, value2 : Value | {
+        hand = r.board + p.hand
+        #(hand.card.value = value1) = 2 and #(hand.card.value = value2) = 2
+    }
 }
 
 pred hasFullHouse{
-
+    some r : RoundState | some p : Player | some value1, value2 : Value | {
+        hand = r.board + p.hand
+        #(hand.Card.Value = value1) = 3 and #(hand.card.value = value2) = 2
+    }
 }
 
 pred hasStraight{
-
+    some r : RoundState | some p : Player | some v1, v2, v3, v4, v5 : Value | {
+        hand = r.board + p.hand
+        (v1 = v2 + 1) and (v2 = v3 + 1) and (v3 = v4 + 1) and (v4 = v5 + 1)
+    }
 }
 
 pred hasFlush{
-
+    some r : RoundState | some p : Player | some suit : Suit | {
+        hand = r.board + p.hand
+        #(hand.card.Suit = suit) = 5
+    }
 }
 
 pred hasRoyalFlush{
-
+    some r : RoundState | some p : Player | some v1, v2, v3, v4, v5 : Value | {
+        hasStraightFlush
+        hand = r.board + p.hand
+        hand.Card.v1 = Ace
+        hand.Card.v2 = King
+        hand.Card.v3 = Queen
+        hand.Card.v4 = Jack
+        hand.Card.v5 = Ten
+    }
 }
 
 pred hasFourOfaKind{
-
+    some r: RoundState | some p: Player | some value1 : Value | {
+        hand = r.board + p.hand
+        #(hand.card.value = value1) = 4
+    }
 }
 
 pred hasThreeofaKind{
-
+    some r: RoundState | some p: Player | some value1 : Value | {
+        hand = r.board + p.hand
+        #(hand.card.value = value1) = 3
+    }
 }
 
 pred hasStraightFlush{
-
+    hasStraight and hasFlush
 }
 
 pred evaluateHand {
