@@ -179,10 +179,7 @@ pred hasTwoPair{
 }
 
 pred hasFullHouse{
-    some r : RoundState | some p : Player | some value1, value2 : Value | {
-        hand = r.board + p.hand
-        #(hand.Card.Value = value1) = 3 and #(hand.card.value = value2) = 2
-    }
+    hasThreeofaKind and hasPair
 }
 
 pred hasStraight{
