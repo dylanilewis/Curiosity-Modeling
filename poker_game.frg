@@ -57,10 +57,6 @@ sig Chip {
     amount: int,
 }
 
-pred initGame {
-    // Implement logic for initializing the game
-}
-
 pred initRound {
     // Implement logic for initializing the round
     nextRound
@@ -103,8 +99,8 @@ pred dealCards {
 
 pred playerFolds {
     // Implement logic for player folding
-    some p : Player | some s : RoundState | {
-        s.players = s.players - p
+    some p : Player | some r : RoundState | {
+        r.players = r.players - p
     }
 }
 
