@@ -1,15 +1,5 @@
 #lang forge/bsl
 
-
-abstract sig RoundState {
-    // the state of the game
-    players: set Player,
-    remainingDeck: set Card,
-    board: set Card,
-    pot: int,
-    highestBet: int,
-}  
-
 sig GameState {
     // the state of the game
     players: set Player,
@@ -17,7 +7,16 @@ sig GameState {
     deck: set Card,
     buyIn: int,
     ante: int,
-} 
+}
+
+abstract sig RoundState {
+    // the state of the game
+    players: set Player,
+    deck: set Card,
+    board: set Card,
+    pot: int,
+    highestBet: int,
+}   
 
 // states of the game
 one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
@@ -69,11 +68,6 @@ pred initGame {
     // Implement logic for initializing the game
 }
 
-pred initDeck {
-    // Implement logic for initializing the deck
-
-}
-
 pred initRound {
     // Implement logic for initializing the round
     nextRound
@@ -83,41 +77,41 @@ pred initRound {
 // need to figure out how to make dealer do the actions associated with each state
 pred nextRoundState {
     // Implement logic for transitioning to the next state
-    all p : Player | g : GameState | r : RoundState | (p.bet = r.highestBet) {
-        g.roundState = preFlop implies g.roundState = postFlop
-        g.roundState = postFlop implies g.roundState = postTurn
-        g.roundState = postTurn implies g.roundState = postRiver
+    all p : Player | r : RoundState | (p.bet = r.highestBet) {
+        r = preFlop implies r = postFlop
+        r = postFlop implies r = postTurn
+        r = postTurn implies r = postRiver
     }
 }
 
-pred nextRound {
-    // Implement logic for transitioning to the next round
-    all g : GameState | r : RoundState | (isRoundFinished) {
-        g.roundState = preFlop
-        r.players = g.players
-        r.remainingDeck = g.deck
-        r.board = {}
-        r.pot = 0
-        r.highestBet = 0
-    }
-    all p : Player | {
-        p.bet = 0
-        p.hand = {}
-    }
-}
+// pred nextRound {
+//     // Implement logic for transitioning to the next round
+//     all r : RoundState | (isRoundFinished) {
+//         r = preFlop
+//         r.players = g.players
+//         r.remainingDeck = g.deck
+//         r.board = {}
+//         r.pot = 0
+//         r.highestBet = 0
+//     }
+//     all p : Player | {
+//         p.bet = 0
+//         p.hand = {}
+//     }
+// }
 
 pred dealCards {
     // Implement logic for dealing the cards
     all p : Player | all r : RoundState | (r = preFlop) and (#p.hand < 2) {
-        p.hand = p.hand + r.remainingDeck.first
-        r.remainingDeck = r.remainingDeck - r.remainingDeck.first
+        p.hand = p.hand + r.deck.first
+        r.deck = r.deck - r.deck.first
     }
 }
 
 pred playerFolds {
     // Implement logic for player folding
-    some p : Player | some s : RoundState | {
-        s.players = s.players - p
+    some p : Player | some r : RoundState | {
+        r.players = r.players - p
     }
 }
 
@@ -159,8 +153,8 @@ pred playerAllIns {
 
 pred playerLeaves {
     // Implement logic for player leaving the game
-    some p : Player | some s : GameState | {
-        s.players = s.players - p
+    some p : Player | some r : RoundState | {
+        r.players = r.players - p
     }
 }
 
@@ -222,8 +216,4 @@ pred findRoundWinner {
 
 pred isRoundFinished {
     // Implement logic for checking if the round is finished
-}
-
-pred isGameFinished {
-    // Implement logic for checking if the game is finished
 }

@@ -2,11 +2,11 @@
 
 1. Project Objective: What are you trying to model? Include a brief description that would give someone unfamiliar with the topic a basic understanding of your goal.
 
-Answer here.
+We are attempting to model a round of Texas Hold'em, a variation of Poker. Our model includes having multiple players be dealt cards, then progressed through multiple different round states (including PreFlop, PostFlop, PostTurn, PostRiver) where the dealer reveals cards for the players and all of the players have the opportunity to perform an action, such as raise, call or fold. If after all players have performed an action during the PostRiver state, we then evaluate the hands of the remaining players to determine a winner and award the chips in the pot for that round to the winning player.
 
 2. Model Design and Visualization: Give an overview of your model design choices, what checks or run statements you wrote, and what we should expect to see from an instance produced by the Sterling visualizer. How should we look at and interpret an instance created by your spec? Did you create a custom visualization, or did you use the default?
 
-Answer here.
+We are using the default visualizer as it would have been a massive undertaking to both model Poker and create a custom visualizer for this project. This is something we intend to do when we continue this project as our final project. Our run statements ... Y
 
 3. Signatures and Predicates: At a high level, what do each of your sigs and preds represent in the context of the model? Justify the purpose for their existence and how they fit together.
 
