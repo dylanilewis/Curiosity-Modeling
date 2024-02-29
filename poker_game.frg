@@ -7,7 +7,8 @@ abstract sig RoundState {
     board: set Card,
     pot: one Int,
     highestBet: one Int,
-    turn: one Player
+    turn: one Player,
+    next: lone RoundState
 }   
 
 // states of the game
@@ -59,29 +60,69 @@ pred rankValues {
     Ace.value = 14
 }
 
-// Sammy TODO: fix, should handle creating players, dealing cards, etc
 pred initRound[r : RoundState] {
     // Implement logic for initializing the round
     r.board = none
     dealCards
-    one p: Player |{
+    one p : Player | {
         p = r.turn
     }
 }
 
-// Sammy TODO: need to figure out how to make dealer do the actions associated with each state
-pred nextRoundState {
-    // Implement logic for transitioning to the next state
-    all p : Player | all r : RoundState | (p.bet = r.highestBet) {
-        #(r.players) = 1 implies findRoundWinner
-        r = preFlop implies r = postFlop
-        r = postFlop implies r = postTurn
-        r = postTurn implies r = postRiver
+pred winner[r : RoundState] {
+    // Implement logic for finding the winner
+    some p : Player {
+        ((#(r.players) = 1) and (p in r.players)) or {
+            all disj p1, p2 : Player | (r = PostRiver) {
+                p1.hand > p2.hand
+            }
+        }
+    }
+}
+
+pred validTurn[r : RoundState] {
+    canPlay[r] implies playerAction[r] else playerFolds
+    r.turn = r.turn.nextPlayer
+}
+
+pred validTransition[pre: State, post: State] {
+    all p : Player | {
+        validTurn[pre]
+    }
+    pre = preFlop implies post = postFlop
+    pre = postFlop implies post = postTurn
+    pre = postTurn implies post = postRiver
+}
+
+pred canPlay[r : RoundState] {
+    some p: Player | {
+        r.turn = p 
+        p in r.players
+        p.chips > 0 or p.bet = r.highestBet
+    }
+}
+
+pred playerAction[r : RoundState] {
+    playerChecks or playerCalls or playerRaises or playerAllIns
+}
+
+pred traces {
+    one preFlop, postRiver: State | {
+        winner[final]
+        initState[preFlop]
+        all r : RoundState | {
+            -- all states are reachable from the initial state
+            r != preFlop implies reachable[r, preFlop, next]
+            -- all of the transitions between initial to final state are valid
+            some r.next implies validTransition[r, r.next]
+        }
+    }
+    all r : RoundState | {
+        winner[r] implies no r.next
     }
 }
 
 pred wellformedDeck {
-    // Implement logic for ensuring the deck is well-formed
     uniqueCards
     all c : Card | {
         c in deck
@@ -222,39 +263,35 @@ pred hasHighCard[p : Player] {
     not hasPair[p]
 }
 
-pred evaluateHand {
+pred evaluateHand[p : Player] {
     // Implement logic for evaluating the hand
-    some p : Player | some r : RoundState | (r = postRiver) {
-        hasRoyalFlush[p] implies p.hand = RoyalFlush
-        hasStraightFlush[p] implies p.hand = StraightFlush
-        hasFourOfaKind[p] implies p.hand = FourOfaKind
-        hasFullHouse[p] implies p.hand = FullHouse
-        hasFlush[p] implies p.hand = Flush
-        hasStraight[p] implies p.hand = Straight
-        hasThreeofaKind[p] implies p.hand = ThreeOfaKind
-        hasTwoPair[p] implies p.hand = TwoPair
-        hasPair[p] implies p.hand = Pair
-        hasHighCard[p] implies p.hand = HighCard
-    }
+    hasRoyalFlush[p] implies p.hand = RoyalFlush
+    hasStraightFlush[p] implies p.hand = StraightFlush
+    hasFourOfaKind[p] implies p.hand = FourOfaKind
+    hasFullHouse[p] implies p.hand = FullHouse
+    hasFlush[p] implies p.hand = Flush
+    hasStraight[p] implies p.hand = Straight
+    hasThreeofaKind[p] implies p.hand = ThreeOfaKind
+    hasTwoPair[p] implies p.hand = TwoPair
+    hasPair[p] implies p.hand = Pair
+    hasHighCard[p] implies p.hand = HighCard
 }
 
-// pred findRoundWinner {
-//     if (players.length == 1) {
-//         players[0].chips.amount = players[0].chips.amount + RoundState.pot
-//     } else {
-//         int index = NegativeInfinity
-//         int bestHand = 0
-//         for each player : p in roundState.players {
-//             if (evaluateHand[p] > bestHand) {
-//                 bestHand = evaluateHand[p]
-//                 index = p
-//             } 
-//         }
-//         players[index].chips.amount = players[index].chips.amount + RoundStatepot
-//     }
-// }
+pred handRanks {
+    HighCard.value = 1
+    Pair.value = 2
+    TwoPair.value = 3
+    ThreeOfaKind.value = 4
+    Straight.value = 5
+    Flush.value = 6
+    FullHouse.value = 7
+    FourOfaKind.value = 8
+    StraightFlush.value = 9
+    RoyalFlush.value = 10
+}
 
 run {rankValues
     wellformedDeck
     playerRotation
+    evaluateHand
     traces} for exactly 52 Card, exactly 6 Player, exactly 5 State for {next is linear}
