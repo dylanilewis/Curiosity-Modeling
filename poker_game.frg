@@ -28,10 +28,12 @@ sig Card {
     value: value,
 }
 
-sig Hand {
+abstract sig Hand {
     // the hand of a player
     cards: set Card,
 }
+
+one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
 
 sig Player {
     // the player
@@ -55,13 +57,13 @@ sig Chip {
     amount: int,
 }
 
+// Sammy TODO: fix
 pred initRound {
     // Implement logic for initializing the round
-    nextRound
     dealCards
 }
 
-// need to figure out how to make dealer do the actions associated with each state
+// Sammy TODO: need to figure out how to make dealer do the actions associated with each state
 pred nextRoundState {
     // Implement logic for transitioning to the next state
     all p : Player | r : RoundState | (p.bet = r.highestBet) {
@@ -72,6 +74,7 @@ pred nextRoundState {
     }
 }
 
+// Sammy TODO: fix
 pred dealCards {
     // Implement logic for dealing the cards
     all p : Player | all r : RoundState | (r = preFlop) and (#p.hand < 2) {
@@ -129,41 +132,41 @@ pred playerLeaves {
     }
 }
 
-pred hasPair {
-    some r : RoundState | some p : Player | some value : Value | {
+pred hasPair[p : Player] {
+    some r : RoundState | some value : Value | {
         hand = r.board + p.hand
         #(hand.card.value = value) = 2
     }
 }
 
-pred hasTwoPair{
-    some r : RoundState | some p : Player | some value1, value2 : Value | {
+pred hasTwoPair[p : Player] {
+    some r : RoundState | some value1, value2 : Value | {
         hand = r.board + p.hand
         #(hand.card.value = value1) = 2 and #(hand.card.value = value2) = 2
     }
 }
 
-pred hasFullHouse{
-    hasThreeofaKind and hasPair
+pred hasFullHouse[p : Player] {
+    hasThreeofaKind[p] and hasPair[p]
 }
 
-pred hasStraight{
-    some r : RoundState | some p : Player | some v1, v2, v3, v4, v5 : Value | {
+pred hasStraight[p : Player] {
+    some r : RoundState | some v1, v2, v3, v4, v5 : Value | {
         hand = r.board + p.hand
         (v1 = v2 + 1) and (v2 = v3 + 1) and (v3 = v4 + 1) and (v4 = v5 + 1)
     }
 }
 
-pred hasFlush{
-    some r : RoundState | some p : Player | some suit : Suit | {
+pred hasFlush[p : Player] {
+    some r : RoundState | some suit : Suit | {
         hand = r.board + p.hand
         #(hand.card.Suit = suit) = 5
     }
 }
 
-pred hasRoyalFlush{
-    some r : RoundState | some p : Player | some v1, v2, v3, v4, v5 : Value | {
-        hasStraightFlush
+pred hasRoyalFlush[p : Player] {
+    some r : RoundState | some v1, v2, v3, v4, v5 : Value | {
+        hasStraightFlush[p]
         hand = r.board + p.hand
         hand.Card.v1 = Ace
         hand.Card.v2 = King
@@ -173,31 +176,64 @@ pred hasRoyalFlush{
     }
 }
 
-pred hasFourOfaKind{
-    some r: RoundState | some p: Player | some value1 : Value | {
+pred hasFourOfaKind[p : Player] {
+    some r: RoundState | some value1 : Value | {
         hand = r.board + p.hand
         #(hand.card.value = value1) = 4
     }
 }
 
-pred hasThreeofaKind{
-    some r: RoundState | some p: Player | some value1 : Value | {
+pred hasThreeofaKind[p : Player] {
+    some r: RoundState | some value1 : Value | {
         hand = r.board + p.hand
         #(hand.card.value = value1) = 3
     }
 }
 
-pred hasStraightFlush {
-    hasStraight and hasFlush
+pred hasStraightFlush[p : Player] {
+    hasStraight[p] and hasFlush[p]
+}
+
+pred hasHighCard[p : Player] {
+    not hasRoyalFlush[p]
+    not hasStraightFlush[p]
+    not hasFourOfaKind[p]
+    not hasFullHouse[p]
+    not hasFlush[p]
+    not hasStraight[p]
+    not hasThreeofaKind[p]
+    not hasTwoPair[p]
+    not hasPair[p]
 }
 
 pred evaluateHand {
     // Implement logic for evaluating the hand
+    some p : Player | some r : RoundState | (r = postRiver) {
+        hasRoyalFlush[p] implies p.hand = RoyalFlush
+        hasStraightFlush[p] implies p.hand = StraightFlush
+        hasFourOfaKind[p] implies p.hand = FourOfaKind
+        hasFullHouse[p] implies p.hand = FullHouse
+        hasFlush[p] implies p.hand = Flush
+        hasStraight[p] implies p.hand = Straight
+        hasThreeofaKind[p] implies p.hand = ThreeOfaKind
+        hasTwoPair[p] implies p.hand = TwoPair
+        hasPair[p] implies p.hand = Pair
+        hasHighCard[p] implies p.hand = HighCard
+    }
 }
 
 pred findRoundWinner {
-    // Implement logic for finding the round winner
-    /*
-    for loop through players calling evaluate hand. Whoever has the highest value wins, pot goes to them.
-    */
+    if (players.length == 1) {
+        players[0].chips.amount = players[0].chips.amount + RoundState.pot
+    } else {
+        int index = NegativeInfinity
+        int bestHand = 0
+        for each player : p in roundState.players {
+            if (evaluateHand[p] > bestHand) {
+                bestHand = evaluateHand[p]
+                index = p
+            } 
+        }
+        players[index].chips.amount = players[index].chips.amount + RoundStatepot
+    }
 }
