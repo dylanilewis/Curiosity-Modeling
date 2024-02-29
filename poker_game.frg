@@ -60,9 +60,13 @@ pred rankValues {
 }
 
 // Sammy TODO: fix, should handle creating players, dealing cards, etc
-pred initRound {
+pred initRound[r : RoundState] {
     // Implement logic for initializing the round
+    r.board = none
     dealCards
+    one p: Player |{
+        p = r.turn
+    }
 }
 
 // Sammy TODO: need to figure out how to make dealer do the actions associated with each state
