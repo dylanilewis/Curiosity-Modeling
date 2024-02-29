@@ -135,7 +135,6 @@ pred hasPair {
         hand = r.board + p.hand
         #(hand.card.value = value) = 2
     }
-    not hasTwoPair and not hasThreeofaKind and not hasFullHouse
 }
 
 pred hasTwoPair{
@@ -187,7 +186,6 @@ pred hasThreeofaKind{
         hand = r.board + p.hand
         #(hand.card.value = value1) = 3
     }
-    not hasPair and not hasFullHouse
 }
 
 pred hasStraightFlush {
