@@ -38,7 +38,7 @@ sig Player {
 
 abstract sig Hand {
     // the hand of a player
-    cards: set Card
+    cards: pfunc Int -> Card
 }
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
@@ -59,7 +59,7 @@ pred rankValues {
     Ace.value = 14
 }
 
-// Sammy TODO: fix, should handle creating players, dealing cards, setting blinds, etc.
+// Sammy TODO: fix, should handle creating players, dealing cards, etc
 pred initRound {
     // Implement logic for initializing the round
     dealCards
@@ -77,23 +77,21 @@ pred nextRoundState {
 }
 
 pred uniqueCards {
-    all disj c1, c2: Card | {
+    all disj c1, c2 : Card | {
         not (c1.rank = c2.rank and c1.suit = c2.suit)
     }
 }
 
 pred playerRotation {
-    all p1, p2: Player | {
+    all p1, p2 : Player | {
         reachable[p1, p2, nextPlayer]
     }
 }
 
 // Sammy TODO: fix
 pred dealCards {
-    // Implement logic for dealing the cards
-    all p : Player | all r : RoundState | (r = preFlop) and (#p.hand < 2) {
-        p.hand = p.hand + r.deck.first
-        r.deck = r.deck - r.deck.first
+    all p : Player | {
+        #{i : Int | p.hand[i]} = 2
     }
 }
 
