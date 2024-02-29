@@ -14,26 +14,25 @@ one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
 
 sig Card {
     // the card
-    suit: one suit,
-    value: one value
+    suit: one Suit,
+    rank: one Rank
 }
 
-sig Suit {
-    // the suit of the card
-    suit: one of Spades, Hearts, Diamonds, Clubs
+abstract sig Suit {}
+one sig Clubs, Diamonds, Hearts, Spades extends Suit {}
+
+abstract sig Rank {
+    value: one Int
 }
 
-sig Value {
-    // the value of the card
-    value: one of Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace
-}
+one sig Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace extends Rank {}
 
 sig Player {
     // the player
-    hand: Hand,
+    hand: one Hand,
     chips: one Int,
     bet: one Int,
-    position: Position
+    position: one Position
 }
 
 abstract sig Hand {
@@ -45,11 +44,27 @@ one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, Thre
 
 abstract sig Position {
     // the position of the player
-    ante: Int
+    ante: one Int
 }
 
 // need to figure out how to set players to each position and rotate them through the game. maybe add a position field to player sig?
 one sig SmallBlind, BigBlind, Regular extends Position {}
+
+pred rankValues {
+    Two.value = 2
+    Three.value = 3
+    Four.value = 4
+    Five.value = 5
+    Six.value = 6
+    Seven.value = 7
+    Eight.value = 8
+    Nine.value = 9
+    Ten.value = 10
+    Jack.value = 11
+    Queen.value = 12
+    King.value = 13
+    Ace.value = 14
+}
 
 // Sammy TODO: fix, should handle creating players, dealing cards, setting blinds, etc.
 pred initRound {
@@ -60,7 +75,7 @@ pred initRound {
 // Sammy TODO: need to figure out how to make dealer do the actions associated with each state
 pred nextRoundState {
     // Implement logic for transitioning to the next state
-    all p : Player | r : RoundState | (p.bet = r.highestBet) {
+    all p : Player | all r : RoundState | (p.bet = r.highestBet) {
         #(r.players) = 1 implies findRoundWinner
         r = preFlop implies r = postFlop
         r = postFlop implies r = postTurn
@@ -209,18 +224,18 @@ pred evaluateHand {
     }
 }
 
-pred findRoundWinner {
-    if (players.length == 1) {
-        players[0].chips.amount = players[0].chips.amount + RoundState.pot
-    } else {
-        int index = NegativeInfinity
-        int bestHand = 0
-        for each player : p in roundState.players {
-            if (evaluateHand[p] > bestHand) {
-                bestHand = evaluateHand[p]
-                index = p
-            } 
-        }
-        players[index].chips.amount = players[index].chips.amount + RoundStatepot
-    }
-}
+// pred findRoundWinner {
+//     if (players.length == 1) {
+//         players[0].chips.amount = players[0].chips.amount + RoundState.pot
+//     } else {
+//         int index = NegativeInfinity
+//         int bestHand = 0
+//         for each player : p in roundState.players {
+//             if (evaluateHand[p] > bestHand) {
+//                 bestHand = evaluateHand[p]
+//                 index = p
+//             } 
+//         }
+//         players[index].chips.amount = players[index].chips.amount + RoundStatepot
+//     }
+// }
