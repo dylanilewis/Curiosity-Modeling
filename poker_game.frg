@@ -6,7 +6,7 @@ abstract sig RoundState {
     deck: set Card,
     board: set Card,
     pot: one Int,
-    highestBet: one Int
+    highestBet: one Int,
     turn: one Player
 }   
 
@@ -88,7 +88,6 @@ pred playerRotation {
     }
 }
 
-// Sammy TODO: fix
 pred dealCards {
     all p : Player | {
         #{i : Int | p.hand[i]} = 2
