@@ -80,6 +80,14 @@ pred nextRoundState {
     }
 }
 
+pred wellformedDeck {
+    // Implement logic for ensuring the deck is well-formed
+    uniqueCards
+    all c : Card | {
+        c in deck
+    }
+}
+
 pred uniqueCards {
     all disj c1, c2 : Card | {
         not (c1.rank = c2.rank and c1.suit = c2.suit)
@@ -245,3 +253,8 @@ pred evaluateHand {
 //         players[index].chips.amount = players[index].chips.amount + RoundStatepot
 //     }
 // }
+
+run {rankValues
+    wellformedDeck
+    playerRotation
+    traces} for exactly 52 Card, exactly 6 Player, exactly 5 State for {next is linear}
