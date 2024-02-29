@@ -1,14 +1,5 @@
 #lang forge/bsl
 
-sig GameState {
-    // the state of the game
-    players: set Player,
-    roundState: RoundState,
-    deck: set Card,
-    buyIn: int,
-    ante: int,
-}
-
 abstract sig RoundState {
     // the state of the game
     players: set Player,
@@ -81,22 +72,6 @@ pred nextRoundState {
     }
 }
 
-// pred nextRound {
-//     // Implement logic for transitioning to the next round
-//     all r : RoundState | (isRoundFinished) {
-//         r = preFlop
-//         r.players = g.players
-//         r.remainingDeck = g.deck
-//         r.board = {}
-//         r.pot = 0
-//         r.highestBet = 0
-//     }
-//     all p : Player | {
-//         p.bet = 0
-//         p.hand = {}
-//     }
-// }
-
 pred dealCards {
     // Implement logic for dealing the cards
     all p : Player | all r : RoundState | (r = preFlop) and (#p.hand < 2) {
@@ -138,7 +113,6 @@ pred playerRaises {
     }
 }
 
-// handle split pots eventually for final project
 pred playerAllIns {
     // Implement logic for player going all in
     some p : Player | some s : RoundState | (p.chips.amount > 0) {
@@ -161,6 +135,7 @@ pred hasPair {
         hand = r.board + p.hand
         #(hand.card.value = value) = 2
     }
+    not hasTwoPair and not hasThreeofaKind and not hasFullHouse
 }
 
 pred hasTwoPair{
@@ -212,10 +187,11 @@ pred hasThreeofaKind{
         hand = r.board + p.hand
         #(hand.card.value = value1) = 3
     }
+    not hasPair and not hasFullHouse
 }
 
-pred hasStraightFlush{
-    hasStraight and hasFlush
+pred hasStraightFlush {
+    hasStraight and hasFlush and not RoyalFlush
 }
 
 pred evaluateHand {
