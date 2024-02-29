@@ -12,6 +12,12 @@ abstract sig RoundState {
 // states of the game
 one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
 
+sig Card {
+    // the card
+    suit: suit,
+    value: value,
+}
+
 sig Suit {
     // the suit of the card
     suit: one of Spades, Hearts, Diamonds, Clubs,
@@ -22,10 +28,12 @@ sig Value {
     value: one of Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace,
 }
 
-sig Card {
-    // the card
-    suit: suit,
-    value: value,
+sig Player {
+    // the player
+    hand: Hand,
+    chips: int,
+    bet: int,
+    position: Position,
 }
 
 abstract sig Hand {
@@ -35,14 +43,6 @@ abstract sig Hand {
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
 
-sig Player {
-    // the player
-    hand: Hand,
-    chips: set Chip,
-    bet: int,
-    position: Position,
-}
-
 abstract sig Position {
     // the position of the player
     ante: int,
@@ -51,13 +51,7 @@ abstract sig Position {
 // need to figure out how to set players to each position and rotate them through the game. maybe add a position field to player sig?
 one sig SmallBlind, BigBlind, Regular extends Position {}
 
-// better to have many seperate types of chips defined in sig or have them just all be int's? something to figure out before coding init.
-sig Chip {
-    // the chips
-    amount: int,
-}
-
-// Sammy TODO: fix
+// Sammy TODO: fix, should handle creating players, dealing cards, setting blinds, etc.
 pred initRound {
     // Implement logic for initializing the round
     dealCards
@@ -122,13 +116,6 @@ pred playerAllIns {
         p.bet = p.bet + p.chips.amount
         p.chips.amount = 0
         s.pot = s.pot + p.bet
-    }
-}
-
-pred playerLeaves {
-    // Implement logic for player leaving the game
-    some p : Player | some r : RoundState | {
-        r.players = r.players - p
     }
 }
 
