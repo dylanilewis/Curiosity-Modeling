@@ -204,7 +204,3 @@ pred findRoundWinner {
     for loop through players calling evaluate hand. Whoever has the highest value wins, pot goes to them.
     */
 }
-
-pred isRoundFinished {
-    // Implement logic for checking if the round is finished
-}
