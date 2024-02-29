@@ -5,8 +5,8 @@ abstract sig RoundState {
     players: set Player,
     deck: set Card,
     board: set Card,
-    pot: int,
-    highestBet: int,
+    pot: one Int,
+    highestBet: one Int
 }   
 
 // states of the game
@@ -14,38 +14,38 @@ one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
 
 sig Card {
     // the card
-    suit: suit,
-    value: value,
+    suit: one suit,
+    value: one value
 }
 
 sig Suit {
     // the suit of the card
-    suit: one of Spades, Hearts, Diamonds, Clubs,
+    suit: one of Spades, Hearts, Diamonds, Clubs
 }
 
 sig Value {
     // the value of the card
-    value: one of Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace,
+    value: one of Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace
 }
 
 sig Player {
     // the player
     hand: Hand,
-    chips: int,
-    bet: int,
-    position: Position,
+    chips: one Int,
+    bet: one Int,
+    position: Position
 }
 
 abstract sig Hand {
     // the hand of a player
-    cards: set Card,
+    cards: set Card
 }
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
 
 abstract sig Position {
     // the position of the player
-    ante: int,
+    ante: Int
 }
 
 // need to figure out how to set players to each position and rotate them through the game. maybe add a position field to player sig?
