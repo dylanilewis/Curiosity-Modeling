@@ -7,6 +7,7 @@ abstract sig RoundState {
     board: set Card,
     pot: one Int,
     highestBet: one Int
+    turn: one Player
 }   
 
 // states of the game
@@ -32,7 +33,7 @@ sig Player {
     hand: one Hand,
     chips: one Int,
     bet: one Int,
-    position: one Position
+    nextPlayer: one Player
 }
 
 abstract sig Hand {
@@ -41,14 +42,6 @@ abstract sig Hand {
 }
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
-
-abstract sig Position {
-    // the position of the player
-    ante: one Int
-}
-
-// need to figure out how to set players to each position and rotate them through the game. maybe add a position field to player sig?
-one sig SmallBlind, BigBlind, Regular extends Position {}
 
 pred rankValues {
     Two.value = 2
@@ -80,6 +73,18 @@ pred nextRoundState {
         r = preFlop implies r = postFlop
         r = postFlop implies r = postTurn
         r = postTurn implies r = postRiver
+    }
+}
+
+pred uniqueCards {
+    all disj c1, c2: Card | {
+        not (c1.rank = c2.rank and c1.suit = c2.suit)
+    }
+}
+
+pred playerRotation {
+    all p1, p2: Player | {
+        reachable[p1, p2, nextPlayer]
     }
 }
 
