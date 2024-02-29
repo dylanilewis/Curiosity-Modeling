@@ -130,7 +130,6 @@ pred playerLeaves {
 }
 
 pred hasPair {
-    //see if a player has a pair in his hand
     some r : RoundState | some p : Player | some value : Value | {
         hand = r.board + p.hand
         #(hand.card.value = value) = 2
@@ -189,7 +188,7 @@ pred hasThreeofaKind{
 }
 
 pred hasStraightFlush {
-    hasStraight and hasFlush and not RoyalFlush
+    hasStraight and hasFlush
 }
 
 pred evaluateHand {
