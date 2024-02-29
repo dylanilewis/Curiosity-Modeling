@@ -64,10 +64,6 @@ sig Chip {
     amount: int,
 }
 
-pred initGame {
-    // Implement logic for initializing the game
-}
-
 pred initRound {
     // Implement logic for initializing the round
     nextRound
@@ -78,6 +74,7 @@ pred initRound {
 pred nextRoundState {
     // Implement logic for transitioning to the next state
     all p : Player | r : RoundState | (p.bet = r.highestBet) {
+        #(r.players) = 1 implies findRoundWinner
         r = preFlop implies r = postFlop
         r = postFlop implies r = postTurn
         r = postTurn implies r = postRiver
@@ -156,11 +153,6 @@ pred playerLeaves {
     some p : Player | some r : RoundState | {
         r.players = r.players - p
     }
-}
-
-pred winRaiseNotCalled {
-    // Implement logic for winning the pot if your raise is not called
-    #s.players = 1
 }
 
 pred hasPair {
