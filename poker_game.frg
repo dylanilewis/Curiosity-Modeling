@@ -239,6 +239,7 @@ pred hasStraight[p : Player] {
 pred hasFlush[p : Player] {
     some r : RoundState | some suit1 : Suit | some i : Int | {
         p.hand = r.board + p.hand
+        // error here
         #((p.hand.cards[i]).suit = suit1) = 5
     }
 }
