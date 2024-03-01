@@ -166,10 +166,10 @@ pred playerChecks {
 * to the highest bet. The players chips are updated and the pot is updated.
 */
 pred playerCalls {
-    some p : Player | some s : RoundState | {(p.chips > 0) and (s.highestBet - p.bet <= p.chips) {
+    some p : Player | some s : RoundState | {(p.chips > 0) and (subtract[s.highestBet, p.bet] <= p.chips) {
         p.bet = s.highestBet
-        p.chips = p.chips - s.highestBet + p.bet
-        s.pot = s.pot + s.highestBet - p.bet
+        p.chips = add[subtract[p.chips, s.highestBet], p.bet]
+        s.pot = subtract[add[s.pot, s.highestBet], p.bet]
     }}
 }
 
@@ -180,8 +180,8 @@ pred playerCalls {
 pred playerRaises {
     some p : Player | some s : RoundState | some i : Int | {(p.chips > 0) and (i > s.highestBet) and (i <= p.chips) {
         p.bet = i
-        p.chips = p.chips - i
-        s.pot = s.pot + i
+        p.chips = subtract[p.chips, i]
+        s.pot = add[s.pot, i]
         s.highestBet = i
     }}
 }
@@ -192,10 +192,10 @@ pred playerRaises {
 */
 pred playerAllIns {
     some p : Player | some s : RoundState | {(p.chips > 0) {
-        p.bet = p.bet + p.chips
+        p.bet = add[p.bet, p.chips]
         p.chips = 0
-        s.pot = s.pot + p.bet
-    }}
+        s.pot = add[s.pot, p.bet]
+        }}
 }
 
 /**
