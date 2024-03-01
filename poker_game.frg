@@ -35,7 +35,7 @@ sig Player {
 
 abstract sig Hand {
     // the hand of a player
-    cards: pfunc Int -> Card,
+    cards: set Card,
     score: one Int
 }
 
@@ -198,7 +198,7 @@ pred playerAllIns {
         p.bet = add[p.bet, p.chips]
         p.chips = 0
         s.pot = add[s.pot, p.bet]
-        }}
+    }}
 }
 
 /**
@@ -244,19 +244,22 @@ pred wellformedCards {
     all c : Card | all r : RoundState | {
         c in r.deck implies {
             c not in r.board
-            all p : Players | {
+            all p : Player | {
                 c not in p.hand
             }
         }
         c in r.board implies {
             c not in r.deck
-            all p : Players | {
+            all p : Player | {
                 c not in p.hand
             }
         }
-        c in p.hand implies {
-            c not in r.deck
-            c not in r.board
+        some disj p1, p2 : Player {
+            c in p1.hand implies {
+                c not in r.deck
+                c not in r.board
+                c not in p2.hand
+            }
         }
     }
 }
