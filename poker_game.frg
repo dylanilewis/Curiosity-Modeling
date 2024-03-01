@@ -97,7 +97,7 @@ pred winner[r : RoundState] {
         ((#(r.players) = 1) and (p in r.players)) or {
             all disj p1, p2 : Player | {
                 r = postRiver
-                p1.hand > p2.hand
+                p1.hand.score > p2.hand.score
             }
         }
     }
@@ -446,8 +446,6 @@ inst optimize_rank {
     `King.value = (3)
     Ace = `Ace
     `Ace.value = (4)
-
-    
 }
 
 run {
