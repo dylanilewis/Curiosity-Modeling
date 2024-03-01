@@ -1,7 +1,6 @@
 #lang forge
 
 abstract sig RoundState {
-    // the state of the game
     players: set Player,
     deck: set Card,
     board: set Card,
@@ -11,11 +10,9 @@ abstract sig RoundState {
     next: lone RoundState
 }   
 
-// states of the game
 one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
 
 sig Card {
-    // the card
     suit: one Suit,
     rank: one Rank
 }
@@ -30,7 +27,6 @@ abstract sig Rank {
 one sig Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace extends Rank {}
 
 sig Player {
-    // the player
     hand: one Hand,
     chips: one Int,
     bet: one Int,
@@ -38,7 +34,6 @@ sig Player {
 }
 
 abstract sig Hand {
-    // the hand of a player
     cards: pfunc Int -> Card
 }
 
@@ -64,7 +59,7 @@ pred rankValues {
 }
 
 /**
-* 
+* This predicate ensures that all players are dealt 2 cards.
 */
 pred dealCards {
     all p : Player | {
@@ -73,11 +68,12 @@ pred dealCards {
 }
 
 /**
-* 
-* Param: 
+* This predicate implements the logic of initializing a round of poker. It ensures the board is empty,
+* the players are dealt cards, the players have the correct amount of chips, and the turn is set to the first player.
+* Param: r - a round state
 */
 pred initRound[r : RoundState] {
-    // Implement logic for initializing the round
+    r = preFlop
     r.board = none
     dealCards
     all p : Player | {
@@ -90,11 +86,11 @@ pred initRound[r : RoundState] {
 }
 
 /**
-* 
-* Param: 
+* This predicate implements the needed constraints for a winner to be named. A player must either be the 
+* last remaining player or have the best hand at the end of the round.
+* Param: r - a round state
 */
 pred winner[r : RoundState] {
-    // Implement logic for finding the winner
     some p : Player {
         ((#(r.players) = 1) and (p in r.players)) or {
             all disj p1, p2 : Player | {
@@ -106,8 +102,9 @@ pred winner[r : RoundState] {
 }
 
 /**
-* 
-* Param: 
+* This predicate checks that a turn is valid. If a player can play, they must play. If they cannot play, they must fold.
+* After a move is made the turn is updated to the next player.
+* Param: r - a round state
 */
 pred validTurn[r : RoundState] {
     canPlay[r] implies playerAction[r] else playerFolds
@@ -115,9 +112,10 @@ pred validTurn[r : RoundState] {
 }
 
 /**
-* 
-* Param: 
-* Param:
+* This predicate checks that a transition is valid. All players must have made a valid move and then the
+* round state is updated to the next round state depending on the pre round state.
+* Param: pre - the current round state
+* Param: post - the next round state
 */
 pred validTransition[pre: RoundState, post: RoundState] {
     all p : Player | {
@@ -141,8 +139,10 @@ pred validTransition[pre: RoundState, post: RoundState] {
 }
 
 /**
-* 
-* Param: 
+* This predicate implements the constraints for a player to be able to play. It must be a players turn, 
+* the player must still be in the game, and a player must either have more than 0 chips or their current bet must
+* be equal to the highest bet.
+* Param: r - a round state
 */
 pred canPlay[r : RoundState] {
     some p: Player | {
@@ -153,30 +153,30 @@ pred canPlay[r : RoundState] {
 }
 
 /**
-* 
+* This predicate implements the logic of a player folding. The player is removed from the round state and will remain
+* removed until the round is over.
 */
 pred playerFolds {
-    // Implement logic for player folding
     some p : Player | some r : RoundState | {
         r.players = r.players - p
     }
 }
 
 /**
-* 
+* This predicate implements the logic of a player checking. Their current bet must be equal to the highest bet, and
+* the players bet remains the same.
 */
 pred playerChecks {
-    // Implement logic for player checking
     some p : Player | some s : RoundState | {(p.bet = s.highestBet) {
         p.bet = p.bet
     }}
 }
 
 /**
-* 
+* This predicate implements the logic of a player calling. The player must have more than 0 chips, and their bet is set
+* to the highest bet. The players chips are updated and the pot is updated.
 */
 pred playerCalls {
-    // Implement logic for player calling
     some p : Player | some s : RoundState | {(p.chips > 0) {
         p.bet = s.highestBet
         p.chips = p.chips - s.highestBet + p.bet
@@ -185,10 +185,10 @@ pred playerCalls {
 }
 
 /**
-* 
+* This predicate implements the logic of a player raising. The player must have more than 0 chips, and their new bet must be 
+* greater than the highest bet. The players chips are updated, the pot is updated, and the highest bet is updated.
 */
 pred playerRaises {
-    // Implement logic for player raising
     some p : Player | some s : RoundState | some i : Int | {(p.chips > 0) and (i > s.highestBet) {
         p.bet = i
         p.chips = p.chips - i
@@ -198,10 +198,10 @@ pred playerRaises {
 }
 
 /**
-* 
+* This predicate implements the logic of a player going all in. The player must have more than 0 chips, and their bet is set
+* to their remaining chips. The players remaining chips are set to 0 and the pot is updated.
 */
 pred playerAllIns {
-    // Implement logic for player going all in
     some p : Player | some s : RoundState | {(p.chips > 0) {
         p.bet = p.bet + p.chips
         p.chips = 0
@@ -210,24 +210,23 @@ pred playerAllIns {
 }
 
 /**
-* 
-* Param: 
+* This predicate checks if the player has a valid action to take. Calling 4 of the above player action predicates. 
+* Param: r - a round state
 */
 pred playerAction[r : RoundState] {
     playerChecks or playerCalls or playerRaises or playerAllIns
 }
 
 /**
-* 
+* This predicate handles the logic of the overall game. It first initializes the game in its preflop state, it then checks
+* that there is a winner in its final postRiver state. Then for all states in the game, it checks that there is a valid
+* transition to the next state. Finally, it checks that once there is a winner the game stops and there are no new states. 
 */
 pred traces {
     one preFlop, postRiver: RoundState | {
-        winner[postRiver]
         initRound[preFlop]
+        winner[postRiver]
         all r : RoundState | {
-            -- all states are reachable from the initial state
-            // r != preFlop implies reachable[r, preFlop, next]
-            -- all of the transitions between initial to final state are valid
             some r.next implies validTransition[r, r.next]
         }
     }
@@ -387,7 +386,6 @@ pred hasHighCard[p : Player] {
 * Param: p - a player
 */
 pred evaluateHand[p : Player] {
-    // Implement logic for evaluating the hand
     hasRoyalFlush[p] implies p.hand = RoyalFlush
     hasStraightFlush[p] implies p.hand = StraightFlush
     hasFourOfaKind[p] implies p.hand = FourOfaKind
