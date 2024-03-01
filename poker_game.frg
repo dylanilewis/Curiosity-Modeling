@@ -241,15 +241,6 @@ pred traces {
 }
 
 /**
-* This predicate checks that all cards are unique.
-*/
-pred uniqueCards {
-    all disj c1, c2 : Card | {
-        not (c1.rank = c2.rank and c1.suit = c2.suit)
-    }
-}
-
-/**
 * This predicate checks the deck, board and all player's hands are formed correctly.
 */
 pred wellformedCards {
