@@ -96,9 +96,21 @@ pred validTransition[pre: RoundState, post: RoundState] {
     all p : Player | {
         validTurn[pre]
     }
-    pre = preFlop implies post = postFlop
-    pre = postFlop implies post = postTurn
-    pre = postTurn implies post = postRiver
+    pre = preFlop implies {
+        post = postFlop
+        #(pre.board) = 0
+        #(post.board) = 3
+    }
+    pre = postFlop implies {
+        post = postTurn
+        #(pre.board) = 0
+        #(post.board) = 3
+        }
+    pre = postTurn implies {
+        post = postRiver
+        #(pre.board) = 0
+        #(post.board) = 3
+        }
 }
 
 pred canPlay[r : RoundState] {
@@ -293,5 +305,5 @@ pred handRanks {
 run {
     wellformedDeck
     playerRotation
-    // traces
+    traces
     } for exactly 52 Card, 3 Player
