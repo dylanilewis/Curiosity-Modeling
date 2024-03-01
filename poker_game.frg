@@ -249,19 +249,19 @@ pred wellformedCards {
                 no {i : Int | (p.hand.cards[i]) = c}
             }
         }
-        // c in r.board implies {
-        //     c not in r.deck
-        //     all p : Player | {
-        //         no {i : Int | (p.hand.cards[i]) = c}
-        //     }
-        // }
-        // some disj p1, p2 : Player | some i : Int {
-        //     p1.hand.cards[i] = c implies {
-        //         c not in r.deck
-        //         c not in r.board
-        //         no {i : Int | (p2.hand.cards[i]) = c}
-        //     }
-        // }
+        c in r.board implies {
+            c not in r.deck
+            all p : Player | {
+                no {i : Int | (p.hand.cards[i]) = c}
+            }
+        }
+        some disj p1, p2 : Player | some i : Int {
+            p1.hand.cards[i] = c implies {
+                c not in r.deck
+                c not in r.board
+                no {i : Int | (p2.hand.cards[i]) = c}
+            }
+        }
     }
 }
 
