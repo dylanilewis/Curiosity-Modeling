@@ -72,7 +72,7 @@ pred initRound[r : RoundState] {
     dealCards
     all p : Player | {
         p.bet = 0
-        p.chips = 10
+        p.chips = 5
     }
     one p : Player | {
         p = r.turn
@@ -109,12 +109,12 @@ pred validTransition[pre: RoundState, post: RoundState] {
         post = postTurn
         #(pre.board) = 0
         #(post.board) = 3
-        }
+    }
     pre = postTurn implies {
         post = postRiver
         #(pre.board) = 0
         #(post.board) = 3
-        }
+    }
 }
 
 pred canPlay[r : RoundState] {
@@ -177,7 +177,7 @@ pred traces {
         initRound[preFlop]
         all r : RoundState | {
             -- all states are reachable from the initial state
-            r != preFlop implies reachable[r, preFlop, next]
+            // r != preFlop implies reachable[r, preFlop, next]
             -- all of the transitions between initial to final state are valid
             some r.next implies validTransition[r, r.next]
         }
@@ -209,15 +209,15 @@ pred playerRotation {
 
 pred hasPair[p : Player] {
     some r : RoundState | some rank : Rank | {
-        hand = r.board + p.hand
-        #(hand.Card.value = rank.value) = 2
+        p.hand = r.board + p.hand
+        #(p.hand.Card.value = rank.value) = 2
     }
 }
 
 pred hasTwoPair[p : Player] {
     some r : RoundState | some rank1, rank2 : Rank | {
-        hand = r.board + p.hand
-        #(hand.Card.value = rank1.value) = 2 and #(hand.Card.value = rank2.value) = 2
+        p.hand = r.board + p.hand
+        #(p.hand.Card.value = rank1.value) = 2 and #(p.hand.Card.value = rank2.value) = 2
     }
 }
 
@@ -227,41 +227,45 @@ pred hasFullHouse[p : Player] {
 
 pred hasStraight[p : Player] {
     some r : RoundState | some r1, r2, r3, r4, r5 : Rank | {
-        hand = r.board + p.hand
-        (r1.value = r2.value + 1) and (r2.value = r3.value + 1) and (r3.value = r4.value + 1) and (r4.value = r5.value + 1)
+        p.hand = r.board + p.hand
+        p.hand.Card.value = r1 and r2.value = r1.value + 1
+        p.hand.Card.value = r2 and r3.value = r2.value + 1
+        p.hand.Card.value = r3 and r4.value = r3.value + 1
+        p.hand.Card.value = r4 and r5.value = r4.value + 1
+        p.hand.Card.value = r5
     }
 }
 
 pred hasFlush[p : Player] {
     some r : RoundState | some suit : Suit | {
-        hand = r.board + p.hand
-        #(hand.Card.Suit = suit) = 5
+        p.hand = r.board + p.hand
+        #(p.hand.Card.Suit = suit) = 5
     }
 }
 
 pred hasRoyalFlush[p : Player] {
     some r : RoundState | some r1, r2, r3, r4, r5 : Rank | {
         hasStraightFlush[p]
-        hand = r.board + p.hand
-        hand.Card.r1.value = Ace
-        hand.Card.r2.value = King
-        hand.Card.r3.value = Queen
-        hand.Card.r4.value = Jack
-        hand.Card.r5.value = Ten
+        p.hand = r.board + p.hand
+        p.hand.Card.r1.value = Ace
+        p.hand.Card.r2.value = King
+        p.hand.Card.r3.value = Queen
+        p.hand.Card.r4.value = Jack
+        p.hand.Card.r5.value = Ten
     }
 }
 
 pred hasFourOfaKind[p : Player] {
     some r: RoundState | some rank1 : Rank | {
-        hand = r.board + p.hand
-        #(hand.Card.rank.value = rank1.value) = 4
+        p.hand = r.board + p.hand
+        #(p.hand.Card.rank.value = rank1.value) = 4
     }
 }
 
 pred hasThreeofaKind[p : Player] {
     some r: RoundState | some rank1 : Rank | {
-        hand = r.board + p.hand
-        #(hand.Card.value = rank1.value) = 3
+        p.hand = r.board + p.hand
+        #(p.hand.Card.value = rank1.value) = 3
     }
 }
 
@@ -311,6 +315,6 @@ pred handRanks {
 run {
     wellformedDeck
     playerRotation
-    initRound
-    // traces
-    } for exactly 52 Card, 3 Player
+    evaluateHand
+    traces
+    } for exactly 12 Card, 2 Player, 4 Int
