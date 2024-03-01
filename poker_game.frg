@@ -125,17 +125,25 @@ pred validTransition[pre : RoundState, post : RoundState] {
     all p : Player | {
         validTurn[pre]
     }
+    some disj c1, c2, c3, c4, c5 : Card | {
+        (pre = preFlop and post = postFlop) implies post.board = c1 + c2 + c3
+        (pre = postFlop and post = postTurn) implies post.board = c1 + c2 + c3 + c4
+        (pre = postTurn and post = postRiver) implies post.board = c1 + c2 + c3 + c4 + c5
+    }
     pre = preFlop implies {
+        pre.next = postFlop
         post = postFlop
         #{c : Card | c in pre.board} = 0
         #{c : Card | c in post.board} = 3
     }
     pre = postFlop implies {
+        pre.next = postTurn
         post = postTurn
         #{c : Card | c in pre.board} = 3
         #{c : Card | c in post.board} = 4
     }
     pre = postTurn implies {
+        pre.next = postRiver
         post = postRiver
         #{c : Card | c in pre.board} = 4
         #{c : Card | c in post.board} = 5

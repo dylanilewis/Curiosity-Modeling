@@ -75,27 +75,119 @@ pred winnerRoundState1Player[r: RoundState]{
     r = postRiver
 }
 pred winnerRoundState2Players[r: RoundState]{
-    some disj p1, p2 :Player | 
+    some disj p1, p2 :Player | {
     p1 in r.players 
     p2 in r.players
     #(r.players) = 2
     r = postRiver
     p1.hand.score > p2.hand.score
+    }
 }
 
 pred badWinnerRoundState[r: RoundState]{
-    some disj p1, p2 :Player | 
+    some disj p1, p2 :Player | {
     p1 in r.players 
     p2 in r.players
     #(r.players) = 2
     r = postRiver
-    p1.chips = p2.chips + r.pot
+    p1.chips = p1.chips + r.pot
+    p2.hand.score > p1.hand.score
+    }
 }
 
 
 test suite for winner {
+    test expect {
+        t1winner: {some r: RoundState | winnerRoundState1Player[r] and winner[r]} is sat
+        t2winner: {some r: RoundState | winnerRoundState2Players[r] and winner[r]} is sat
+        t3winner: {some r: RoundState | badWinnerRoundState[r] and winner[r]} is unsat
+    }
+}
+pred canPlay1[r: RoundState]{
+    some p: Player | {
+    p in r.players
+    p.chips > 0
+    r.turn = p
+    }
 
 }
+
+pred notHisTurn[r: RoundState]{
+    some p: Player | {
+    p in r.players
+    r.turn != p
+}}
+
+pred notInPlayers[r: RoundState]{
+    some p: Player | not p in r.players
+}
+
+pred notEnoughChips[r: RoundState]{
+    some p: Player | {
+    p in r.players
+    p.chips = 0
+}}
+
+test suite for canPlay {
+    test expect {
+        t1: {some r: RoundState | canPlay1[r] and canPlay[r]} is sat
+        t2: {some r: RoundState | notHisTurn[r] and canPlay[r]} is unsat
+        t3: {some r: RoundState | notInPlayers[r] and canPlay[r]} is unsat
+        t4: {some r: RoundState | notEnoughChips[r] and canPlay[r]} is unsat
+    }
+}
+
+pred validTurn1[r: RoundState]{
+    some p: Player | {
+    p in r.players
+    p.bet = r.highestBet
+}}
+
+pred notValidTurn1[r: RoundState]{
+    some p: Player |{
+    p in r.players
+    p.bet > r.highestBet
+}}
+
+test suite for validTurn {
+    assert canPlay is necessary for validTurn
+    test expect {
+        t1: {some r: RoundState | canPlay1[r] and validTurn[r]} is sat
+        t2: {some r: RoundState | notHisTurn[r] and validTurn[r]} is unsat
+        t3: {some r: RoundState | notInPlayers[r] and validTurn[r]} is unsat
+        t4: {some r: RoundState | notEnoughChips[r] and validTurn[r]} is unsat
+        t5: {some r: RoundState | notValidTurn1[r] and validTurn[r]} is unsat
+    }
+}
+
+pred preFlopToPostFlop[pre, post: RoundState]{
+    some disj c1, c2, c3: Card | some disj i1, i2, i3: Int {
+    pre = preFlop
+    pre.next = post
+    post = postFlop
+    pre.board = none
+    #(post.board) = 3
+}}
+
+pred postFlopToPostTurn[pre, post: RoundState]{
+    pre = postFlop
+    pre.next = post
+    post = postTurn
+    pre.board = post.board
+    #(post.board) = 4
+}
+
+pred postTurnToPostRiver[pre, post: RoundState]{
+    pre = postTurn
+    pre.next = post
+    post = postRiver
+    pre.board = post.board
+    #(post.board) = 5
+}
+
+// test suite for validTransition {
+//     assert validTurn is necessary for validTransition
+// }
 
 
 // pred checkingPlayer {
