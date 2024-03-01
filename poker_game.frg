@@ -65,19 +65,55 @@ one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, Thre
 */
 inst optimize_rank {
     Rank = `Two + `Three +`Four + `Five + `Six + `Seven + `Eight + `Nine + `Ten + `Jack + `Queen + `King + `Ace
-    `Two.value in (-8)
-    `Three.value in (-7)
-    `Four.value in (-6)
-    `Five.value in (-5)
-    `Six.value in (-4)
-    `Seven.value in (-3)
-    `Eight.value in (-2)
-    `Nine.value in (-1)
-    `Ten.value in (0)
-    `Jack.value in (1)
-    `Queen.value in (2)
-    `King.value in (3)
-    `Ace.value in (4)
+    Two = `Two
+    `Two.value = (-8)
+    Three = `Three
+    `Three.value = (-7)
+    Four = `Four
+    `Four.value = (-6)
+    Five = `Five
+    `Five.value = (-5)
+    Six = `Six
+    `Six.value = (-4)
+    Seven = `Seven
+    `Seven.value = (-3)
+    Eight = `Eight
+    `Eight.value = (-2)
+    Nine = `Nine
+    `Nine.value = (-1)
+    Ten = `Ten
+    `Ten.value = (0)
+    Jack = `Jack
+    `Jack.value = (1)
+    Queen = `Queen
+    `Queen.value = (2)
+    King = `King
+    `King.value = (3)
+    Ace = `Ace
+    `Ace.value = (4)
+
+    Hand = `RoyalFlush + `StraightFlush + `FourOfaKind + `FullHouse + `Flush + `Straight + `ThreeOfaKind + `TwoPair + `Pair + `HighCard
+    HighCard = `HighCard
+    `HighCard.score = (-3)
+    Pair = `Pair
+    `Pair.score = (-2)
+    TwoPair = `TwoPair
+    `TwoPair.score = (-1)
+    ThreeOfaKind = `ThreeOfaKind
+    `ThreeOfaKind.score = (0)
+    Straight = `Straight
+    `Straight.score = (1)
+    Flush = `Flush
+    `Flush.score = (2)
+    FullHouse = `FullHouse
+    `FullHouse.score = (3)
+    FourOfaKind = `FourOfaKind
+    `FourOfaKind.score = (4)
+    StraightFlush = `StraightFlush
+    `StraightFlush.score = (5)
+    RoyalFlush = `RoyalFlush
+    `RoyalFlush.score = (6)
+    
 }
 
 /**
@@ -420,18 +456,36 @@ pred evaluateHand[p : Player] {
 /*
 * This predicate maps the possible hands a player can have to a numeric int value to make comparing hands easier.
 */
-pred handRanks {
-    HighCard.score = -3
-    Pair.score = -2
-    TwoPair.score = -1
-    ThreeOfaKind.score = 0
-    Straight.score = 1
-    Flush.score = 2
-    FullHouse.score = 3
-    FourOfaKind.score = 4
-    StraightFlush.score = 5
-    RoyalFlush.score = 6
-}
+// inst optimizeHandRank {
+//     HighCard = `HighCard
+//     `HighCard.score = (-3)
+//     Pair = `Pair
+//     `Pair.score = (-2)
+//     TwoPair = `TwoPair
+//     `TwoPair.score = (-1)
+//     ThreeOfaKind = `ThreeOfaKind
+//     `ThreeOfaKind.score = (0)
+//     Straight = `Straight
+//     `Straight.score = (1)
+//     Flush = `Flush
+//     `Flush.score = (2)
+//     FullHouse = `FullHouse
+//     `FullHouse.score = (3)
+//     FourOfaKind = `FourOfaKind
+//     `FourOfaKind.score = (4)
+// }
+// pred handRanks {
+//     HighCard.score = -3
+//     Pair.score = -2
+//     TwoPair.score = -1
+//     ThreeOfaKind.score = 0
+//     Straight.score = 1
+//     Flush.score = 2
+//     FullHouse.score = 3
+//     FourOfaKind.score = 4
+//     StraightFlush.score = 5
+//     RoyalFlush.score = 6
+// }
 
 /**
 * 
@@ -439,15 +493,17 @@ pred handRanks {
 pred evaluateHandRun {
     some p : Player | {
         evaluateHand[p]
-}}
+}
+}
 
 run {
     // rankValues
     // optimize_rank
     wellformedDeck
     playerRotation
-    handRanks
+    // handRanks
     evaluateHandRun
     traces
-} for exactly 12 Card, 3 Player, 4 Int
+} for exactly 12 Card, 3 Player, 4 Int for optimize_rank
+
 
