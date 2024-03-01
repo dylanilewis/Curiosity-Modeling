@@ -269,9 +269,9 @@ pred playerRotation {
 * Param: p - a player
 */
 pred hasPair[p : Player] {
-    some r : RoundState | some rank : Rank | some i : Int | {
+    some r : RoundState | some rank1 : Rank | {
         p.hand = r.board + p.hand
-        #((p.hand.cards[i]) = rank) = 2
+        #{i: Int | (p.hand.cards[i]).rank = rank1} = 2
     }
 }
 
@@ -280,9 +280,9 @@ pred hasPair[p : Player] {
 * Param: p - a player
 */
 pred hasTwoPair[p : Player] {
-    some r : RoundState | some rank1, rank2 : Rank | some i1, i2 : Int | {
+    some r : RoundState | some disj rank1, rank2 : Rank | {
         p.hand = r.board + p.hand
-        #((p.hand.cards[i1]) = rank1) = 2 and #((p.hand.cards[i2]) = rank2) = 2
+        #{i: Int | (p.hand.cards[i]).rank = rank1} = 2 and #{i: Int | (p.hand.cards[i]).rank = rank2} = 2
     }
 }
 
@@ -314,9 +314,9 @@ pred hasStraight[p : Player] {
 * Param: p - a player
 */
 pred hasFlush[p : Player] {
-    some r : RoundState | some suit1 : Suit | some i : Int | {
+    some r : RoundState | some suit1 : Suit | {
         p.hand = r.board + p.hand
-        #(((p.hand.cards[i]).suit = suit1) = 5)
+        #{i: Int | (p.hand.cards[i]).suit = suit1} = 5
     }
 }
 
@@ -325,14 +325,14 @@ pred hasFlush[p : Player] {
 * Param: p - a player
 */
 pred hasRoyalFlush[p : Player] {
-    some r : RoundState | some r1, r2, r3, r4, r5 : Rank | some i1, i2, i3, i4, i5 : Int | {
+    some r : RoundState | some i1, i2, i3, i4, i5 : Int | {
         hasStraightFlush[p]
         p.hand = r.board + p.hand
-        (p.hand.cards[i1]).r1 = Ace
-        (p.hand.cards[i2]).r2 = King
-        (p.hand.cards[i3]).r3 = Queen
-        (p.hand.cards[i4]).r4 = Jack
-        (p.hand.cards[i5]).r5 = Ten
+        (p.hand.cards[i1]).rank = Ace
+        (p.hand.cards[i2]).rank = King
+        (p.hand.cards[i3]).rank = Queen
+        (p.hand.cards[i4]).rank = Jack
+        (p.hand.cards[i5]).rank = Ten
     }
 }
 
@@ -341,9 +341,9 @@ pred hasRoyalFlush[p : Player] {
 * Param: p - a player
 */
 pred hasFourOfaKind[p : Player] {
-    some r: RoundState | some rank1 : Rank | some i : Int | {
+    some r: RoundState | some rank1 : Rank | {
         p.hand = r.board + p.hand
-        #((p.hand.cards[i]).rank = rank1) = 4
+        #{i: Int | (p.hand.cards[i]).rank = rank1} = 4
     }
 }
 
@@ -352,9 +352,9 @@ pred hasFourOfaKind[p : Player] {
 * Param: p - a player
 */
 pred hasThreeofaKind[p : Player] {
-    some r: RoundState | some rank1 : Rank | some i : Int | {
+    some r: RoundState | some rank1 : Rank | {
         p.hand = r.board + p.hand
-        #((p.hand.cards[i]).rank = rank1) = 3
+        #{i: Int | (p.hand.cards[i]).rank = rank1} = 3
     }
 }
 
