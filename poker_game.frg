@@ -52,7 +52,6 @@ pred dealCards {
     all p : Player | some disj card1, card2: Card | {
         #(p.hand.cards) = 2
         #{i: Int | (p.hand.cards[i]) = card1} = 1
-
         #{i: Int | (p.hand.cards[i]) = card2} = 1
     }
 }
@@ -71,6 +70,7 @@ pred initRound[r : RoundState] {
     all p : Player | {
         p.bet = 0
         p.chips = 5
+        p.hand = none
     }
     one p : Player | {
         p = r.turn
@@ -237,12 +237,23 @@ pred uniqueCards {
 }
 
 /**
-* This predicate checks the deck is formed correctly.
+* This predicate checks the deck, board and all player's hands are formed correctly.
 */
-pred wellformedDeck {
+pred wellformedCards {
     uniqueCards
-    all c : Card | some r : RoundState {
-        c in r.deck
+    all c : Card | all r : Roundstate | all p : Players | {
+        c in r.deck implies {
+            c not in r.board
+            c not in p.hand
+        }
+        c in r.board implies {
+            c not in r.deck
+            c not in p.hand
+        }
+        c in p.hand implies {
+            c not in r.deck
+            c not in r.board
+        }
     }
 }
 
