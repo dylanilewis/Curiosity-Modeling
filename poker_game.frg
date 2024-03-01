@@ -312,15 +312,16 @@ pred handRanks {
     RoyalFlush.value = 10
 }
 
-pred evaluateHandRun{
+pred evaluateHandRun {
     some p : Player | {
         evaluateHand[p]
-        handRanks
 }}
 
 run {
+    rankValues
     wellformedDeck
     playerRotation
+    handRanks
     evaluateHandRun
     traces
 } for exactly 12 Card, 2 Player, 4 Int
