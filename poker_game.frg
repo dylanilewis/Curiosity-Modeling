@@ -226,13 +226,13 @@ pred hasFullHouse[p : Player] {
 }
 
 pred hasStraight[p : Player] {
-    some r : RoundState | some r1, r2, r3, r4, r5 : Rank | {
+    some r : RoundState | some r1, r2, r3, r4, r5 : Rank | some i1, i2, i3, i4, i5 : Int | {
         p.hand = r.board + p.hand
-        p.hand.Card.value = r1 and r2.value = r1.value + 1
-        p.hand.Card.value = r2 and r3.value = r2.value + 1
-        p.hand.Card.value = r3 and r4.value = r3.value + 1
-        p.hand.Card.value = r4 and r5.value = r4.value + 1
-        p.hand.Card.value = r5
+        (p.hand.Card[i1]).rank = r1 and r2.value = r1.value + 1
+        (p.hand.Card[i2]).rank = r2 and r3.value = r2.value + 1
+        (p.hand.Card[i3]).rank = r3 and r4.value = r3.value + 1
+        (p.hand.Card[i4]).rank = r4 and r5.value = r4.value + 1
+        (p.hand.Card[i5]).rank = r5
     }
 }
 
@@ -315,6 +315,6 @@ pred handRanks {
 run {
     wellformedDeck
     playerRotation
-    evaluateHand
+    // evaluateHand
     traces
     } for exactly 12 Card, 2 Player, 4 Int
