@@ -167,7 +167,7 @@ pred traces {
         }
     }
     all r : RoundState | {
-        winner[r] implies no r.next
+        winner[r] implies not some r.next
     }
 }
 
@@ -179,9 +179,7 @@ pred uniqueCards {
 
 pred wellformedDeck {
     uniqueCards
-    all c : Card | some s: RoundState | {
-        c in s.deck
-    }
+    
 }
 
 pred playerRotation {
@@ -295,4 +293,5 @@ pred handRanks {
 run {
     wellformedDeck
     playerRotation
-    traces} for exactly 52 Card, exactly 6 Player, exactly 5 RoundState for {next is linear}
+    // traces
+    } for exactly 52 Card, 3 Player
