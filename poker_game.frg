@@ -35,7 +35,7 @@ sig Player {
 
 sig Hand {
     // the hand of a player
-    cards: set Card,
+    cards: pfunc Int -> Card,
     score: one Int
 }
 
@@ -59,13 +59,10 @@ pred uniqueCards {
 * This predicate ensures that all players are dealt 2 cards.
 */
 pred dealCards {
-    all disj p1, p2 : Player | some disj card1, card2: Card | {
-        // p1 != p2
-        #(p1.hand.cards) = 2
-        // #{i: Int | (p.hand.cards[i]) = card1} = 1
-        // #{i: Int | (p.hand.cards[i]) = card2} = 1
-        p1.hand.cards != p2.hand.cards
-        p1.hand.cards = card1 + card2
+    all p : Player | some disj card1, card2: Card | {
+        #(p.hand.cards) = 2
+        #{i: Int | (p.hand.cards[i]) = card1} = 1
+        #{i: Int | (p.hand.cards[i]) = card2} = 1
 }
 }
 
@@ -83,7 +80,7 @@ pred initRound[r : RoundState] {
     all p : Player | {
         p.bet = 0
         p.chips = 5
-        p.hand = none
+        // p.hand = none
     }
     one p : Player | {
         p = r.turn
@@ -122,24 +119,24 @@ pred validTurn[r : RoundState] {
 * Param: pre - the current round state
 * Param: post - the next round state
 */
-pred validTransition[pre: RoundState, post: RoundState] {
+pred validTransition[pre : RoundState, post : RoundState] {
     all p : Player | {
         validTurn[pre]
     }
     pre = preFlop implies {
         post = postFlop
-        #(pre.board) = 0
-        #(post.board) = 3
+        #{c : Card | c in pre.board} = 0
+        #{c : Card | c in post.board} = 3
     }
     pre = postFlop implies {
         post = postTurn
-        #(pre.board) = 3
-        #(post.board) = 4
+        #{c : Card | c in pre.board} = 3
+        #{c : Card | c in post.board} = 4
     }
     pre = postTurn implies {
         post = postRiver
-        #(pre.board) = 4
-        #(post.board) = 5
+        #{c : Card | c in pre.board} = 4
+        #{c : Card | c in post.board} = 5
     }
 }
 
@@ -249,22 +246,22 @@ pred wellformedCards {
         c in r.deck implies {
             c not in r.board
             all p : Player | {
-                c not in p.hand
+                no {i : Int | (p.hand.cards[i]) = c}
             }
         }
-        c in r.board implies {
-            c not in r.deck
-            all p : Player | {
-                c not in p.hand
-            }
-        }
-        some disj p1, p2 : Player {
-            c in p1.hand implies {
-                c not in r.deck
-                c not in r.board
-                c not in p2.hand
-            }
-        }
+        // c in r.board implies {
+        //     c not in r.deck
+        //     all p : Player | {
+        //         no {i : Int | (p.hand.cards[i]) = c}
+        //     }
+        // }
+        // some disj p1, p2 : Player | some i : Int {
+        //     p1.hand.cards[i] = c implies {
+        //         c not in r.deck
+        //         c not in r.board
+        //         no {i : Int | (p2.hand.cards[i]) = c}
+        //     }
+        // }
     }
 }
 
