@@ -181,6 +181,7 @@ pred playerFolds {
 pred playerChecks {
     some p : Player | some s : RoundState | {(p.bet = s.highestBet) {
         p.bet = p.bet
+        //This makes no sense
     }}
 }
 
