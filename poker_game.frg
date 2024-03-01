@@ -33,27 +33,40 @@ sig Player {
     nextPlayer: one Player
 }
 
-abstract sig Hand {
+sig Hand {
     // the hand of a player
     cards: set Card,
     score: one Int
 }
 
-one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
+// one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
 
 /**
 * This predicate maps the rank of cards to numeric values to make comparing cards easier 
 */
 
 /**
+* This predicate checks that all cards are unique.
+*/
+pred uniqueCards {
+    all disj c1, c2 : Card | {
+        not (c1.rank = c2.rank and c1.suit = c2.suit)
+    }
+}
+
+
+/**
 * This predicate ensures that all players are dealt 2 cards.
 */
 pred dealCards {
-    all p : Player | some disj card1, card2: Card | {
-        #(p.hand.cards) = 2
-        #{i: Int | (p.hand.cards[i]) = card1} = 1
-        #{i: Int | (p.hand.cards[i]) = card2} = 1
-    }
+    all disj p1, p2 : Player | some disj card1, card2: Card | {
+        // p1 != p2
+        #(p1.hand.cards) = 2
+        // #{i: Int | (p.hand.cards[i]) = card1} = 1
+        // #{i: Int | (p.hand.cards[i]) = card2} = 1
+        p1.hand.cards != p2.hand.cards
+        p1.hand.cards = card1 + card2
+}
 }
 
 /**
@@ -396,16 +409,16 @@ pred hasHighCard[p : Player] {
 * Param: p - a player
 */
 pred evaluateHand[p : Player] {
-    hasRoyalFlush[p] implies p.hand = RoyalFlush
-    hasStraightFlush[p] implies p.hand = StraightFlush
-    hasFourOfaKind[p] implies p.hand = FourOfaKind
-    hasFullHouse[p] implies p.hand = FullHouse
-    hasFlush[p] implies p.hand = Flush
-    hasStraight[p] implies p.hand = Straight
-    hasThreeofaKind[p] implies p.hand = ThreeOfaKind
-    hasTwoPair[p] implies p.hand = TwoPair
-    hasPair[p] implies p.hand = Pair
-    hasHighCard[p] implies p.hand = HighCard
+    hasRoyalFlush[p] implies p.hand.score = 5
+    hasStraightFlush[p] implies p.hand.score = 4
+    hasFourOfaKind[p] implies p.hand.score = 3
+    hasFullHouse[p] implies p.hand.score = 2
+    hasFlush[p] implies p.hand.score = 1
+    hasStraight[p] implies p.hand.score = 0
+    hasThreeofaKind[p] implies p.hand.score = -1
+    hasTwoPair[p] implies p.hand.score = -2
+    hasPair[p] implies p.hand.score = -3
+    hasHighCard[p] implies p.hand.score = -4
 }
 
 /**
@@ -445,28 +458,6 @@ inst optimize_rank {
     `King.value = (3)
     Ace = `Ace
     `Ace.value = (4)
-
-    Hand = `RoyalFlush + `StraightFlush + `FourOfaKind + `FullHouse + `Flush + `Straight + `ThreeOfaKind + `TwoPair + `Pair + `HighCard
-    HighCard = `HighCard
-    `HighCard.score = (-3)
-    Pair = `Pair
-    `Pair.score = (-2)
-    TwoPair = `TwoPair
-    `TwoPair.score = (-1)
-    ThreeOfaKind = `ThreeOfaKind
-    `ThreeOfaKind.score = (0)
-    Straight = `Straight
-    `Straight.score = (1)
-    Flush = `Flush
-    `Flush.score = (2)
-    FullHouse = `FullHouse
-    `FullHouse.score = (3)
-    FourOfaKind = `FourOfaKind
-    `FourOfaKind.score = (4)
-    StraightFlush = `StraightFlush
-    `StraightFlush.score = (5)
-    RoyalFlush = `RoyalFlush
-    `RoyalFlush.score = (6)
 
     
 }
