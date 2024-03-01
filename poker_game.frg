@@ -70,6 +70,10 @@ pred initRound[r : RoundState] {
     // Implement logic for initializing the round
     r.board = none
     dealCards
+    all p : Player | {
+        p.bet = 0
+        p.chips = 10
+    }
     one p : Player | {
         p = r.turn
     }
@@ -191,7 +195,9 @@ pred uniqueCards {
 
 pred wellformedDeck {
     uniqueCards
-    
+    all c : Card | some r : RoundState {
+        c in r.deck
+    }
 }
 
 pred playerRotation {
@@ -305,5 +311,6 @@ pred handRanks {
 run {
     wellformedDeck
     playerRotation
-    traces
+    initRound
+    // traces
     } for exactly 52 Card, 3 Player
