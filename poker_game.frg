@@ -35,7 +35,8 @@ sig Player {
 
 abstract sig Hand {
     // the hand of a player
-    cards: pfunc Int -> Card
+    cards: pfunc Int -> Card,
+    score: one Int
 }
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
@@ -58,58 +59,6 @@ one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, Thre
 /**
 * This predicate maps the rank of cards to numeric values to make comparing cards easier 
 */
-inst optimize_rank {
-    Rank = `Two + `Three +`Four + `Five + `Six + `Seven + `Eight + `Nine + `Ten + `Jack + `Queen + `King + `Ace
-    Two = `Two
-    `Two.value = (-8)
-    Three = `Three
-    `Three.value = (-7)
-    Four = `Four
-    `Four.value = (-6)
-    Five = `Five
-    `Five.value = (-5)
-    Six = `Six
-    `Six.value = (-4)
-    Seven = `Seven
-    `Seven.value = (-3)
-    Eight = `Eight
-    `Eight.value = (-2)
-    Nine = `Nine
-    `Nine.value = (-1)
-    Ten = `Ten
-    `Ten.value = (0)
-    Jack = `Jack
-    `Jack.value = (1)
-    Queen = `Queen
-    `Queen.value = (2)
-    King = `King
-    `King.value = (3)
-    Ace = `Ace
-    `Ace.value = (4)
-
-    Hand = `RoyalFlush + `StraightFlush + `FourOfaKind + `FullHouse + `Flush + `Straight + `ThreeOfaKind + `TwoPair + `Pair + `HighCard
-    HighCard = `HighCard
-    `HighCard.score = (-3)
-    Pair = `Pair
-    `Pair.score = (-2)
-    TwoPair = `TwoPair
-    `TwoPair.score = (-1)
-    ThreeOfaKind = `ThreeOfaKind
-    `ThreeOfaKind.score = (0)
-    Straight = `Straight
-    `Straight.score = (1)
-    Flush = `Flush
-    `Flush.score = (2)
-    FullHouse = `FullHouse
-    `FullHouse.score = (3)
-    FourOfaKind = `FourOfaKind
-    `FourOfaKind.score = (4)
-    StraightFlush = `StraightFlush
-    `StraightFlush.score = (5)
-    RoyalFlush = `RoyalFlush
-    `RoyalFlush.score = (6)
-    
-}
 
 /**
 * This predicate ensures that all players are dealt 2 cards.
@@ -181,13 +130,13 @@ pred validTransition[pre: RoundState, post: RoundState] {
     }
     pre = postFlop implies {
         post = postTurn
-        #(pre.board) = 0
-        #(post.board) = 3
+        #(pre.board) = 3
+        #(post.board) = 4
     }
     pre = postTurn implies {
         post = postRiver
-        #(pre.board) = 0
-        #(post.board) = 3
+        #(pre.board) = 4
+        #(post.board) = 5
     }
 }
 
@@ -494,13 +443,64 @@ pred evaluateHandRun {
 }
 }
 
+inst optimize_rank {
+    Rank = `Two + `Three +`Four + `Five + `Six + `Seven + `Eight + `Nine + `Ten + `Jack + `Queen + `King + `Ace
+    Two = `Two
+    `Two.value = (-8)
+    Three = `Three
+    `Three.value = (-7)
+    Four = `Four
+    `Four.value = (-6)
+    Five = `Five
+    `Five.value = (-5)
+    Six = `Six
+    `Six.value = (-4)
+    Seven = `Seven
+    `Seven.value = (-3)
+    Eight = `Eight
+    `Eight.value = (-2)
+    Nine = `Nine
+    `Nine.value = (-1)
+    Ten = `Ten
+    `Ten.value = (0)
+    Jack = `Jack
+    `Jack.value = (1)
+    Queen = `Queen
+    `Queen.value = (2)
+    King = `King
+    `King.value = (3)
+    Ace = `Ace
+    `Ace.value = (4)
+
+    Hand = `RoyalFlush + `StraightFlush + `FourOfaKind + `FullHouse + `Flush + `Straight + `ThreeOfaKind + `TwoPair + `Pair + `HighCard
+    HighCard = `HighCard
+    `HighCard.score = (-3)
+    Pair = `Pair
+    `Pair.score = (-2)
+    TwoPair = `TwoPair
+    `TwoPair.score = (-1)
+    ThreeOfaKind = `ThreeOfaKind
+    `ThreeOfaKind.score = (0)
+    Straight = `Straight
+    `Straight.score = (1)
+    Flush = `Flush
+    `Flush.score = (2)
+    FullHouse = `FullHouse
+    `FullHouse.score = (3)
+    FourOfaKind = `FourOfaKind
+    `FourOfaKind.score = (4)
+    StraightFlush = `StraightFlush
+    `StraightFlush.score = (5)
+    RoyalFlush = `RoyalFlush
+    `RoyalFlush.score = (6)
+
+    
+}
+
 run {
-    // rankValues
-    // optimize_rank
     wellformedDeck
     playerRotation
-    // handRanks
-    evaluateHandRun
+    // evaluateHandRun
     traces
 } for exactly 12 Card, 3 Player, 4 Int for optimize_rank
 
