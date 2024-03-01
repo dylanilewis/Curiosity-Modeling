@@ -35,7 +35,7 @@ sig Player {
 
 sig Hand {
     // the hand of a player
-    cards: pfunc Int -> Card,
+    cards: set Card,
     score: one Int
 }
 
@@ -61,9 +61,9 @@ pred uniqueCards {
 pred dealCards {
     all p : Player | some disj card1, card2: Card | {
         #(p.hand.cards) = 2
-        #{i: Int | (p.hand.cards[i]) = card1} = 1
-        #{i: Int | (p.hand.cards[i]) = card2} = 1
-}
+        card1 in p.hand
+        card2 in p.hand
+    }
 }
 
 /**
@@ -248,20 +248,20 @@ pred wellformedCards {
         c in r.deck implies {
             c not in r.board
             all p : Player | {
-                no {i : Int | (p.hand.cards[i]) = c}
+                c not in p.hand
             }
         }
         c in r.board implies {
             c not in r.deck
             all p : Player | {
-                no {i : Int | (p.hand.cards[i]) = c}
+                c not in p.hand
             }
         }
         some disj p1, p2 : Player | some i : Int {
-            p1.hand.cards[i] = c implies {
+            c in p1.hand implies {
                 c not in r.deck
                 c not in r.board
-                no {i : Int | (p2.hand.cards[i]) = c}
+                c not in p2.hand
             }
         }
     }
