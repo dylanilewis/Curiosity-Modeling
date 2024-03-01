@@ -324,4 +324,4 @@ run {
     handRanks
     evaluateHandRun
     traces
-} for exactly 12 Card, 2 Player, 4 Int
+} for exactly 12 Card, 3 players, 4 Int
