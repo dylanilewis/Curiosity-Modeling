@@ -241,14 +241,18 @@ pred uniqueCards {
 */
 pred wellformedCards {
     uniqueCards
-    all c : Card | all r : Roundstate | all p : Players | {
+    all c : Card | all r : RoundState | {
         c in r.deck implies {
             c not in r.board
-            c not in p.hand
+            all p : Players | {
+                c not in p.hand
+            }
         }
         c in r.board implies {
             c not in r.deck
-            c not in p.hand
+            all p : Players | {
+                c not in p.hand
+            }
         }
         c in p.hand implies {
             c not in r.deck
@@ -284,7 +288,7 @@ pred hasPair[p : Player] {
 pred hasTwoPair[p : Player] {
     some r : RoundState | some disj rank1, rank2 : Rank | {
         p.hand = r.board + p.hand
-        #{i: Int | (p.hand.cards[i]).rank = rank1} = 2 and #{i: Int | (p.hand.cards[i]).rank = rank2} = 2
+        #{i : Int | (p.hand.cards[i]).rank = rank1} = 2 and #{i : Int | (p.hand.cards[i]).rank = rank2} = 2
     }
 }
 
@@ -465,7 +469,7 @@ inst optimize_rank {
 }
 
 run {
-    wellformedDeck
+    wellformedCards
     playerRotation
     // evaluateHandRun
     traces
