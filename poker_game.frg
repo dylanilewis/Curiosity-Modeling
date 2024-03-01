@@ -62,6 +62,8 @@ pred dealCards {
 pred initRound[r : RoundState] {
     r = preFlop
     r.board = none
+    r.highestBet = 0
+    r.pot = 0
     dealCards
     all p : Player | {
         p.bet = 0
