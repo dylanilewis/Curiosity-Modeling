@@ -44,6 +44,9 @@ abstract sig Hand {
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
 
+/**
+* This predicate maps the rank of cards to numeric values to make comparing cards easier 
+*/
 pred rankValues {
     Two.value = 2
     Three.value = 3
@@ -60,12 +63,19 @@ pred rankValues {
     Ace.value = 14
 }
 
+/**
+* 
+*/
 pred dealCards {
     all p : Player | {
         #(p.hand.cards) = 2
     }
 }
 
+/**
+* 
+* Param: 
+*/
 pred initRound[r : RoundState] {
     // Implement logic for initializing the round
     r.board = none
@@ -79,6 +89,10 @@ pred initRound[r : RoundState] {
     }
 }
 
+/**
+* 
+* Param: 
+*/
 pred winner[r : RoundState] {
     // Implement logic for finding the winner
     some p : Player {
@@ -91,11 +105,20 @@ pred winner[r : RoundState] {
     }
 }
 
+/**
+* 
+* Param: 
+*/
 pred validTurn[r : RoundState] {
     canPlay[r] implies playerAction[r] else playerFolds
     r.turn = r.turn.nextPlayer
 }
 
+/**
+* 
+* Param: 
+* Param:
+*/
 pred validTransition[pre: RoundState, post: RoundState] {
     all p : Player | {
         validTurn[pre]
@@ -117,6 +140,10 @@ pred validTransition[pre: RoundState, post: RoundState] {
     }
 }
 
+/**
+* 
+* Param: 
+*/
 pred canPlay[r : RoundState] {
     some p: Player | {
         r.turn = p 
@@ -125,6 +152,9 @@ pred canPlay[r : RoundState] {
     }
 }
 
+/**
+* 
+*/
 pred playerFolds {
     // Implement logic for player folding
     some p : Player | some r : RoundState | {
@@ -132,6 +162,9 @@ pred playerFolds {
     }
 }
 
+/**
+* 
+*/
 pred playerChecks {
     // Implement logic for player checking
     some p : Player | some s : RoundState | {(p.bet = s.highestBet) {
@@ -139,6 +172,9 @@ pred playerChecks {
     }}
 }
 
+/**
+* 
+*/
 pred playerCalls {
     // Implement logic for player calling
     some p : Player | some s : RoundState | {(p.chips > 0) {
@@ -148,6 +184,9 @@ pred playerCalls {
     }}
 }
 
+/**
+* 
+*/
 pred playerRaises {
     // Implement logic for player raising
     some p : Player | some s : RoundState | some i : Int | {(p.chips > 0) and (i > s.highestBet) {
@@ -158,6 +197,9 @@ pred playerRaises {
     }}
 }
 
+/**
+* 
+*/
 pred playerAllIns {
     // Implement logic for player going all in
     some p : Player | some s : RoundState | {(p.chips > 0) {
@@ -167,10 +209,17 @@ pred playerAllIns {
     }}
 }
 
+/**
+* 
+* Param: 
+*/
 pred playerAction[r : RoundState] {
     playerChecks or playerCalls or playerRaises or playerAllIns
 }
 
+/**
+* 
+*/
 pred traces {
     one preFlop, postRiver: RoundState | {
         winner[postRiver]
@@ -187,12 +236,18 @@ pred traces {
     }
 }
 
+/**
+* This predicate checks that all cards are unique.
+*/
 pred uniqueCards {
     all disj c1, c2 : Card | {
         not (c1.rank = c2.rank and c1.suit = c2.suit)
     }
 }
 
+/**
+* This predicate checks the deck is formed correctly.
+*/
 pred wellformedDeck {
     uniqueCards
     all c : Card | some r : RoundState {
@@ -200,13 +255,19 @@ pred wellformedDeck {
     }
 }
 
+/**
+* This predicate checks that all players are reachable from each other, meaning there is a cycle of players.
+*/
 pred playerRotation {
     all p1, p2 : Player | {
         reachable[p1, p2, nextPlayer]
     }
 }
 
-
+/**
+* This predicate checks if the player's best hand is a pair.
+* Param: p - a player
+*/
 pred hasPair[p : Player] {
     some r : RoundState | some rank : Rank | some i : Int | {
         p.hand = r.board + p.hand
@@ -214,6 +275,10 @@ pred hasPair[p : Player] {
     }
 }
 
+/**
+* This predicate checks if the player's best hand is a two pair.
+* Param: p - a player
+*/
 pred hasTwoPair[p : Player] {
     some r : RoundState | some rank1, rank2 : Rank | some i1, i2 : Int | {
         p.hand = r.board + p.hand
@@ -221,10 +286,18 @@ pred hasTwoPair[p : Player] {
     }
 }
 
+/**
+* This predicate checks if the player's best hand is a full house.
+* Param: p - a player
+*/
 pred hasFullHouse[p : Player] {
     hasThreeofaKind[p] and hasPair[p]
 }
 
+/**
+* This predicate checks if the player's best hand is a straight.
+* Param: p - a player
+*/
 pred hasStraight[p : Player] {
     some r : RoundState | some r1, r2, r3, r4, r5 : Rank | some i1, i2, i3, i4, i5 : Int | {
         p.hand = r.board + p.hand
@@ -236,6 +309,10 @@ pred hasStraight[p : Player] {
     }
 }
 
+/**
+* This predicate checks if the player's best hand is a flush.
+* Param: p - a player
+*/
 pred hasFlush[p : Player] {
     some r : RoundState | some suit1 : Suit | some i : Int | {
         p.hand = r.board + p.hand
@@ -243,6 +320,10 @@ pred hasFlush[p : Player] {
     }
 }
 
+/**
+* This predicate checks if the player's best hand is a royal flush.
+* Param: p - a player
+*/
 pred hasRoyalFlush[p : Player] {
     some r : RoundState | some r1, r2, r3, r4, r5 : Rank | some i1, i2, i3, i4, i5 : Int | {
         hasStraightFlush[p]
@@ -255,6 +336,10 @@ pred hasRoyalFlush[p : Player] {
     }
 }
 
+/**
+* This predicate checks if the player's best hand is a four of a kind.
+* Param: p - a player
+*/
 pred hasFourOfaKind[p : Player] {
     some r: RoundState | some rank1 : Rank | some i : Int | {
         p.hand = r.board + p.hand
@@ -262,6 +347,10 @@ pred hasFourOfaKind[p : Player] {
     }
 }
 
+/**
+* This predicate checks if the player's best hand is a three of a kind.
+* Param: p - a player
+*/
 pred hasThreeofaKind[p : Player] {
     some r: RoundState | some rank1 : Rank | some i : Int | {
         p.hand = r.board + p.hand
@@ -269,10 +358,18 @@ pred hasThreeofaKind[p : Player] {
     }
 }
 
+/**
+* This predicate checks if the player's best hand is a straight flush.
+* Param: p - a player
+*/
 pred hasStraightFlush[p : Player] {
     hasStraight[p] and hasFlush[p]
 }
 
+/**
+* This predicate checks if the player's best hand is a high card.
+* Param: p - a player
+*/
 pred hasHighCard[p : Player] {
     not hasRoyalFlush[p]
     not hasStraightFlush[p]
@@ -285,6 +382,10 @@ pred hasHighCard[p : Player] {
     not hasPair[p]
 }
 
+/**
+* This predicate checks the hand a player has and sets the players hand to the type of hand they have.
+* Param: p - a player
+*/
 pred evaluateHand[p : Player] {
     // Implement logic for evaluating the hand
     hasRoyalFlush[p] implies p.hand = RoyalFlush
@@ -299,6 +400,9 @@ pred evaluateHand[p : Player] {
     hasHighCard[p] implies p.hand = HighCard
 }
 
+/*
+* This predicate maps the possible hands a player can have to a numeric int value to make comparing hands easier.
+*/
 pred handRanks {
     HighCard.value = 1
     Pair.value = 2
@@ -312,6 +416,9 @@ pred handRanks {
     RoyalFlush.value = 10
 }
 
+/**
+* 
+*/
 pred evaluateHandRun {
     some p : Player | {
         evaluateHand[p]
@@ -324,4 +431,4 @@ run {
     handRanks
     evaluateHandRun
     traces
-} for exactly 12 Card, 3 players, 4 Int
+} for exactly 12 Card, 3 players, 5 Int
