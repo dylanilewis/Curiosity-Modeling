@@ -97,10 +97,11 @@ pred winner[r : RoundState] {
         ((#(r.players) = 1) and (p in r.players)) or {
             all disj p1, p2 : Player | {
                 r = postRiver
-                p1.hand.score > p2.hand.score
+                p1.hand.score >= p2.hand.score
                 p1.chips = add[p1.chips, pot]
             }
         }
+        p.chips = add[p.chips, pot]
     }
 }
 
