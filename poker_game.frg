@@ -34,28 +34,45 @@ sig Player {
 }
 
 abstract sig Hand {
+    // the hand of a player
     cards: pfunc Int -> Card
 }
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
 
+// pred rankValues {
+//     Two.value = -8
+//     Three.value = -7
+//     Four.value = -6
+//     Five.value = -5
+//     Six.value = -4
+//     Seven.value = -3
+//     Eight.value = -2
+//     Nine.value = -1
+//     Ten.value = 0
+//     Jack.value = 1
+//     Queen.value = 2
+//     King.value = 3
+//     Ace.value = 4
+// }
 /**
 * This predicate maps the rank of cards to numeric values to make comparing cards easier 
 */
-pred rankValues {
-    Two.value = 2
-    Three.value = 3
-    Four.value = 4
-    Five.value = 5
-    Six.value = 6
-    Seven.value = 7
-    Eight.value = 8
-    Nine.value = 9
-    Ten.value = 10
-    Jack.value = 11
-    Queen.value = 12
-    King.value = 13
-    Ace.value = 14
+inst optimize_rank {
+    Rank = `Two + `Three +`Four + `Five + `Six + `Seven + `Eight + `Nine + `Ten + `Jack + `Queen + `King + `Ace
+    `Two.value in (-8)
+    `Three.value in (-7)
+    `Four.value in (-6)
+    `Five.value in (-5)
+    `Six.value in (-4)
+    `Seven.value in (-3)
+    `Eight.value in (-2)
+    `Nine.value in (-1)
+    `Ten.value in (0)
+    `Jack.value in (1)
+    `Queen.value in (2)
+    `King.value in (3)
+    `Ace.value in (4)
 }
 
 /**
@@ -300,10 +317,10 @@ pred hasFullHouse[p : Player] {
 pred hasStraight[p : Player] {
     some r : RoundState | some r1, r2, r3, r4, r5 : Rank | some i1, i2, i3, i4, i5 : Int | {
         p.hand = r.board + p.hand
-        (p.hand.cards[i1]).rank = r1 and r2.value = r1.value + 1
-        (p.hand.cards[i2]).rank = r2 and r3.value = r2.value + 1
-        (p.hand.cards[i3]).rank = r3 and r4.value = r3.value + 1
-        (p.hand.cards[i4]).rank = r4 and r5.value = r4.value + 1
+        (p.hand.cards[i1]).rank = r1 and r2.value = add[r1.value,1]
+        (p.hand.cards[i2]).rank = r2 and r3.value = add[r2.value,1]
+        (p.hand.cards[i3]).rank = r3 and r4.value = add[r3.value,1]
+        (p.hand.cards[i4]).rank = r4 and r5.value = add[r4.value,1]
         (p.hand.cards[i5]).rank = r5
     }
 }
@@ -402,16 +419,16 @@ pred evaluateHand[p : Player] {
 * This predicate maps the possible hands a player can have to a numeric int value to make comparing hands easier.
 */
 pred handRanks {
-    HighCard.value = 1
-    Pair.value = 2
-    TwoPair.value = 3
-    ThreeOfaKind.value = 4
-    Straight.value = 5
-    Flush.value = 6
-    FullHouse.value = 7
-    FourOfaKind.value = 8
-    StraightFlush.value = 9
-    RoyalFlush.value = 10
+    HighCard.score = -3
+    Pair.score = -2
+    TwoPair.score = -1
+    ThreeOfaKind.score = 0
+    Straight.score = 1
+    Flush.score = 2
+    FullHouse.score = 3
+    FourOfaKind.score = 4
+    StraightFlush.score = 5
+    RoyalFlush.score = 6
 }
 
 /**
@@ -423,10 +440,12 @@ pred evaluateHandRun {
 }}
 
 run {
-    rankValues
+    // rankValues
+    // optimize_rank
     wellformedDeck
     playerRotation
     handRanks
     evaluateHandRun
     traces
-} for exactly 12 Card, 3 players, 5 Int
+} for exactly 12 Card, 3 Player, 4 Int
+
