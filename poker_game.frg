@@ -49,8 +49,11 @@ one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, Thre
 * This predicate ensures that all players are dealt 2 cards.
 */
 pred dealCards {
-    all p : Player | {
+    all p : Player | some disj card1, card2: Card | {
         #(p.hand.cards) = 2
+        #{i: Int | (p.hand.cards[i]) = card1} = 1
+
+        #{i: Int | (p.hand.cards[i]) = card2} = 1
     }
 }
 
@@ -455,6 +458,6 @@ run {
     playerRotation
     // evaluateHandRun
     traces
-} for exactly 12 Card, 3 Player, 4 Int for optimize_rank
+} for exactly 12 Card, 2 Player, 4 Int for optimize_rank
 
 
