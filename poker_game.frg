@@ -41,21 +41,6 @@ abstract sig Hand {
 
 one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
 
-// pred rankValues {
-//     Two.value = -8
-//     Three.value = -7
-//     Four.value = -6
-//     Five.value = -5
-//     Six.value = -4
-//     Seven.value = -3
-//     Eight.value = -2
-//     Nine.value = -1
-//     Ten.value = 0
-//     Jack.value = 1
-//     Queen.value = 2
-//     King.value = 3
-//     Ace.value = 4
-// }
 /**
 * This predicate maps the rank of cards to numeric values to make comparing cards easier 
 */
@@ -179,7 +164,7 @@ pred playerChecks {
 * to the highest bet. The players chips are updated and the pot is updated.
 */
 pred playerCalls {
-    some p : Player | some s : RoundState | {(p.chips > 0) {
+    some p : Player | some s : RoundState | {(p.chips > 0) and (s.highestBet - p.bet <= p.chips) {
         p.bet = s.highestBet
         p.chips = p.chips - s.highestBet + p.bet
         s.pot = s.pot + s.highestBet - p.bet
@@ -191,7 +176,7 @@ pred playerCalls {
 * greater than the highest bet. The players chips are updated, the pot is updated, and the highest bet is updated.
 */
 pred playerRaises {
-    some p : Player | some s : RoundState | some i : Int | {(p.chips > 0) and (i > s.highestBet) {
+    some p : Player | some s : RoundState | some i : Int | {(p.chips > 0) and (i > s.highestBet) and (i <= p.chips) {
         p.bet = i
         p.chips = p.chips - i
         s.pot = s.pot + i
@@ -399,40 +384,6 @@ pred evaluateHand[p : Player] {
     hasPair[p] implies p.hand = Pair
     hasHighCard[p] implies p.hand = HighCard
 }
-
-/*
-* This predicate maps the possible hands a player can have to a numeric int value to make comparing hands easier.
-*/
-// inst optimizeHandRank {
-//     HighCard = `HighCard
-//     `HighCard.score = (-3)
-//     Pair = `Pair
-//     `Pair.score = (-2)
-//     TwoPair = `TwoPair
-//     `TwoPair.score = (-1)
-//     ThreeOfaKind = `ThreeOfaKind
-//     `ThreeOfaKind.score = (0)
-//     Straight = `Straight
-//     `Straight.score = (1)
-//     Flush = `Flush
-//     `Flush.score = (2)
-//     FullHouse = `FullHouse
-//     `FullHouse.score = (3)
-//     FourOfaKind = `FourOfaKind
-//     `FourOfaKind.score = (4)
-// }
-// pred handRanks {
-//     HighCard.score = -3
-//     Pair.score = -2
-//     TwoPair.score = -1
-//     ThreeOfaKind.score = 0
-//     Straight.score = 1
-//     Flush.score = 2
-//     FullHouse.score = 3
-//     FourOfaKind.score = 4
-//     StraightFlush.score = 5
-//     RoyalFlush.score = 6
-// }
 
 /**
 * 
