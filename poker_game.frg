@@ -63,8 +63,9 @@ pred uniqueCards {
 pred dealCards {
     all p : Player | some disj card1, card2: Card | {
         #(p.hand.cards) = 2
-        card1 in p.hand
-        card2 in p.hand
+        // These 2 lines cause model to be unsatisfiable
+        // card1 in p.hand
+        // card2 in p.hand
     }
 }
 
@@ -100,10 +101,10 @@ pred winner[r : RoundState] {
             all disj p1, p2 : Player | {
                 r = postRiver
                 p1.hand.score >= p2.hand.score
-                // p1.chips = add[p1.chips, r.pot]
+                p1.chips = add[p1.chips, r.pot]
             }
         }
-        // p.chips = add[p.chips, r.pot]
+        p.chips = add[p.chips, r.pot]
     }
 }
 
