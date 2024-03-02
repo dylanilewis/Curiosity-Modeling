@@ -2,6 +2,18 @@
 
 open "poker_game.frg"
 
+/**
+ * PLEASE READ
+ * After completing the test suite for the third predicate, winner, we started getting an unknown error
+ * that we were unable to fix during the entire day. The error prevented us from running any .frg file. 
+ * Therefore, we do not know if the tests for the rests of the predicates are correct or no as we were not 
+ * able to run the file during the entire day. I wrote all the tests and did the documentation, because we 
+ * were running out of time. By the time we were able to fix the bug we only had an hour until submission. So 
+ * we were not able to fix all the issues that the file has. The tests are self explanatory and deal with the supposed
+ * constraints that the predicates should be enforcing, so even though some of them do not work hopefully the intention
+ * of what we are trying to achieve is clear.
+ */
+
 pred dealCardsTest1{
     all p: Player | some disj c1, c2: Card | {
         c1 in p.hand.cards

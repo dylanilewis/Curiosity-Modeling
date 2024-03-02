@@ -61,7 +61,7 @@ pred uniqueCards {
 * This predicate ensures that all players are dealt 2 cards.
 */
 pred dealCards {
-    all p : Player | some disj card1, card2: Card | {
+    all p1 : Player | {
         #(p.hand.cards) = 2
         // These 2 lines cause model to be unsatisfiable
         // card1 in p.hand
