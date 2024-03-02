@@ -588,9 +588,9 @@ pred notPlayerHasThreeOfAKind[p: Player] {
  */
 test suite for hasThreeOfAKind {
     test expect {
-        threeOfAKindTest1: {some p: Player | playerHasThreeOfAKind1[p] and hasThreeOfAKind[p]} is sat
-        threeOfAKindTest2: {some p: Player | playerHasThreeOfAKind2[p] and hasThreeOfAKind[p]} is sat
-        threeOfAKindTest3: {some p: Player | notPlayerHasThreeOfAKind[p] and hasThreeOfAKind[p]} is unsat
+        threeOfAKindTest1: {some p: Player | playerHasThreeOfAKind1[p] and hasThreeofaKind[p]} is sat
+        threeOfAKindTest2: {some p: Player | playerHasThreeOfAKind2[p] and hasThreeofaKind[p]} is sat
+        threeOfAKindTest3: {some p: Player | notPlayerHasThreeOfAKind[p] and hasThreeofaKind[p]} is unsat
     }
 }
 
@@ -623,10 +623,10 @@ pred notPlayerHasFourOfAKind[p: Player] {
 /**
  * Test suite for hasFourOfAKind
  */
-test suite for hasFourOfAKind {
+test suite for hasFourOfaKind {
     test expect {
-        fourOfAKindTest1: {some p: Player | playerHasFourOfAKind[p] and hasFourOfAKind[p]} is sat
-        fourOfAKindTest2: {some p: Player | notPlayerHasFourOfAKind[p] and hasFourOfAKind[p]} is unsat
+        fourOfAKindTest1: {some p: Player | playerHasFourOfAKind[p] and hasFourOfaKind[p]} is sat
+        fourOfAKindTest2: {some p: Player | notPlayerHasFourOfAKind[p] and hasFourOfaKind[p]} is unsat
     }
 }
 
@@ -662,7 +662,7 @@ pred notPlayerHasFullHouse[p: Player] {
  * Test suite for hasFullHouse
  */
 test suite for hasFullHouse {
-    assert hasThreeOfAKind is necessary for hasFullHouse
+    assert hasThreeofaKind is necessary for hasFullHouse
     assert hasPair is necessary for hasFullHouse
     test expect {
         fullHouseTest1: {some p: Player | playerHasFullHouse1[p] and hasFullHouse[p]} is sat
@@ -853,11 +853,11 @@ test suite for hasRoyalFlush {
 pred hasHighCard1[p: Player] {
     not hasPair[p]
     not hasTwoPair[p]
-    not hasThreeOfAKind[p]
+    not hasThreeofaKind[p]
     not hasStraight[p]
     not hasFlush[p]
     not hasFullHouse[p]
-    not hasFourOfAKind[p]
+    not hasFourOfaKind[p]
     not hasStraightFlush[p]
     not hasRoyalFlush[p]
 }
@@ -870,11 +870,11 @@ test suite for hasHighCard {
         highCardTest1: {some p : Player | hasHighCard1[p] and hasHighCard[p]} is sat
         highCardTest2: {some p : Player | hasPair[p] and hasHighCard[p]} is unsat
         highCardTest3: {some p : Player | hasTwoPair[p] and hasHighCard[p]} is unsat
-        highCardTest4: {some p : Player | hasThreeOfAKind[p] and hasHighCard[p]} is unsat
+        highCardTest4: {some p : Player | hasThreeofaKind[p] and hasHighCard[p]} is unsat
         highCardTest5: {some p : Player | hasStraight[p] and hasHighCard[p]} is unsat
         highCardTest6: {some p : Player | hasFlush[p] and hasHighCard[p]} is unsat
         highCardTest7: {some p : Player | hasFullHouse[p] and hasHighCard[p]} is unsat
-        highCardTest8: {some p : Player | hasFourOfAKind[p] and hasHighCard[p]} is unsat
+        highCardTest8: {some p : Player | hasFourOfaKind[p] and hasHighCard[p]} is unsat
         highCardTest9: {some p : Player | hasStraightFlush[p] and hasHighCard[p]} is unsat
         highCardTest10: {some p : Player | hasRoyalFlush[p] and hasHighCard[p]} is unsat
     }
@@ -932,13 +932,13 @@ pred incorrectEvaluateHands3 {
 /**
  * Test suite for evaluateHands
  */
-test suite for evaluateHands {
+test suite for evaluateHand {
     test expect {
-        evaluateHandsTest1: {correctEvaluateHands1 and evaluateHands} is sat
-        evaluateHandsTest2: {correctEvaluateHands2 and evaluateHands} is sat
-        evaluateHandsTest3: {correctEvaluateHands3 and evaluateHands} is sat
-        evaluateHandsTest4: {incorrectEvaluateHands1 and evaluateHands} is unsat
-        evaluateHandsTest5: {incorrectEvaluateHands2 and evaluateHands} is unsat
-        evaluateHandsTest6: {incorrectEvaluateHands3 and evaluateHands} is unsat
+        evaluateHandsTest1: {correctEvaluateHands1 and evaluateHand} is sat
+        evaluateHandsTest2: {correctEvaluateHands2 and evaluateHand} is sat
+        evaluateHandsTest3: {correctEvaluateHands3 and evaluateHand} is sat
+        evaluateHandsTest4: {incorrectEvaluateHands1 and evaluateHand} is unsat
+        evaluateHandsTest5: {incorrectEvaluateHands2 and evaluateHand} is unsat
+        evaluateHandsTest6: {incorrectEvaluateHands3 and evaluateHand} is unsat
     }
 }
