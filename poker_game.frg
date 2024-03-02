@@ -1,5 +1,6 @@
 #lang forge
 
+// This sig represents the state of a round of poker. It contains the players, the deck, the board, the pot, the highest bet, the turn, and the next round state.
 abstract sig RoundState {
     players: set Player,
     deck: set Card,
@@ -10,22 +11,30 @@ abstract sig RoundState {
     next: lone RoundState
 }   
 
+// These sigs represent the different states of a round of poker.
 one sig preFlop, postFlop, postTurn, postRiver extends RoundState {}
 
+// This sig represents a card. It contains a suit and a rank.
 sig Card {
     suit: one Suit,
     rank: one Rank
 }
 
+// This sig represents a suit.
 abstract sig Suit {}
+
+// These sigs represent the different suits of a deck of cards.
 one sig Clubs, Diamonds, Hearts, Spades extends Suit {}
 
+// This sig represents a rank, which is a value from 2 to Ace.
 abstract sig Rank {
     value: one Int
 }
 
+// These sigs represent the different ranks of a deck of cards.
 one sig Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace extends Rank {}
 
+// This sig represents a player. It contains a hand, chips, a bet, and the next player.
 sig Player {
     hand: one Hand,
     chips: one Int,
@@ -33,17 +42,11 @@ sig Player {
     nextPlayer: one Player
 }
 
+// This sig represents a hand. It contains a set of cards and a score.
 sig Hand {
-    // the hand of a player
     cards: set Card,
     score: one Int
 }
-
-// one sig RoyalFlush, StraightFlush, FourOfaKind, FullHouse, Flush, Straight, ThreeOfaKind, TwoPair, Pair, HighCard extends Hand {}
-
-/**
-* This predicate maps the rank of cards to numeric values to make comparing cards easier 
-*/
 
 /**
 * This predicate checks that all cards are unique.
@@ -53,7 +56,6 @@ pred uniqueCards {
         not (c1.rank = c2.rank and c1.suit = c2.suit)
     }
 }
-
 
 /**
 * This predicate ensures that all players are dealt 2 cards.
@@ -181,7 +183,6 @@ pred playerFolds {
 pred playerChecks {
     some p : Player | some s : RoundState | {(p.bet = s.highestBet) {
         p.bet = p.bet
-        //This makes no sense
     }}
 }
 
@@ -421,14 +422,8 @@ pred evaluateHand[p : Player] {
 }
 
 /**
-* 
+* This instance is used to optimize the conversion between the rank and value of a card.
 */
-pred evaluateHandRun {
-    some p : Player | {
-        evaluateHand[p]
-}
-}
-
 inst optimize_rank {
     Rank = `Two + `Three +`Four + `Five + `Six + `Seven + `Eight + `Nine + `Ten + `Jack + `Queen + `King + `Ace
     Two = `Two
@@ -462,7 +457,11 @@ inst optimize_rank {
 run {
     wellformedCards
     playerRotation
-    // evaluateHandRun
+    /*
+    some p : Player | {
+        evaluateHand[p]
+    }
+    */
     traces
 } for exactly 12 Card, 2 Player, 4 Int for optimize_rank
 
