@@ -24,6 +24,10 @@ pred dealCardsTest3{
         c3 in p.hand.cards
     }
 }
+
+/**
+ * Test suite for the dealCards predicate
+ */
 test suite for dealCards {
     test expect {
         t1: {dealCardsTest1 and dealCards} is sat
@@ -62,6 +66,9 @@ pred badRoundState[s: RoundState]{
     s.pot = 0
 }
 
+/**
+ * Test suite for the initRound predicate
+ */
 test suite for initRound{
     test expect {
         t11: {some r: RoundState | playersChipsGood and goodRoundState[r] and initRound[r]} is sat
@@ -95,7 +102,9 @@ pred badWinnerRoundState[r: RoundState]{
     }
 }
 
-
+/**
+ * Test suite for the winner predicate
+ */
 test suite for winner {
     test expect {
         t1winner: {some r: RoundState | winnerRoundState1Player[r] and winner[r]} is sat
@@ -128,6 +137,9 @@ pred notEnoughChips[r: RoundState]{
     p.chips = 0
 }}
 
+/**
+ * Test suite for the canPlay predicate
+ */
 test suite for canPlay {
     test expect {
         t1: {some r: RoundState | canPlay1[r] and canPlay[r]} is sat
@@ -149,6 +161,9 @@ pred notValidTurn1[r: RoundState]{
     p.bet > r.highestBet
 }}
 
+/**
+ * Test suite for the validTurn predicate
+ */
 test suite for validTurn {
     assert canPlay is necessary for validTurn
     test expect {
@@ -210,6 +225,9 @@ pred badPostTurnToPostRiver[pre, post: RoundState]{
     #(post.board) = 3
 }
 
+/**
+ * Test suite for the validTransition predicate
+ */
 test suite for validTransition {
     assert validTurn is necessary for validTransition
     test expect {
@@ -241,6 +259,9 @@ pred notCheckingPlayer {
     }
 }
 
+/**
+ * Test suite for the playerChecks predicate
+ */
 test suite for playerChecks {
     test expect {
         t1: {checkingPlayer and playerChecks} is sat
@@ -260,6 +281,9 @@ pred notFoldingPlayer {
     }
 }
 
+/**
+ * Test suite for the playerFolds predicate
+ */
 test suite for playerFolds {
     test expect {
         t1: {foldingPlayer and playerFolds} is sat
@@ -279,6 +303,9 @@ pred notRaisingPlayer {
     p.bet < s.highestBet
 }}
 
+/**
+ * Test suite for playerRaises
+ */
 test suite for playerRaises {
     test expect {
         t1: {raisingPlayer and playerRaises} is sat
@@ -298,6 +325,9 @@ pred notCallingPlayer {
     p.bet != s.highestBet
 }
 
+/**
+ * Test suite for playerCalls
+ */
 test suite for playerCalls {
     test expect {
         t1: {callingPlayer and playerCalls} is sat
@@ -318,6 +348,9 @@ pred notAllInPlayer {
     p.chips = 5
 }
 
+/**
+ * Test suite for playerAllIns
+ */
 test suite for playerAllIns{
     test expect {
         t1: {allInPlayer and playerAllIns} is sat
@@ -325,6 +358,9 @@ test suite for playerAllIns{
     }
 }
 
+/**
+ * Test suite for playerAction predicate
+ */
 test suite for playerAction{
     assert playerFolds is sufficient for playerAction
     assert playerChecks is sufficient for playerAction
@@ -333,9 +369,11 @@ test suite for playerAction{
     assert playerAllIns is sufficient for playerAction
 }
 
-// no idea how to test traces
-//test suite for traces{
-// }
+/**
+ * Test suite for the traces predicate
+ */
+test suite for traces{
+}
 
 pred sameCardInDeck{
     some c1, c2: Card | some r: RoundState | {
@@ -370,6 +408,9 @@ pred wellformedCards1{
     }
 }
 
+/**
+ * Test suite for wellformedCards predicate
+ */
 test suite for wellformedCards{
     test expect {
         wellformedt1: {sameCardInDeck and wellformedCards} is unsat
@@ -399,6 +440,9 @@ pred badPlayerRotation1{
     }
 }
 
+/**
+ * Test suite for playerRotation predicate
+ */
 test suite for playerRotation{
     test expect {
         t1: {playerRotation1 and playerRotation} is sat
@@ -433,6 +477,9 @@ pred playerHasNoPair[p: Player]{
     }
 }
 
+/**
+ * Test suite for hasPair
+ */
 test suite for hasPair{
     test expect {
         pairTest1: {some p: Player | playerHasPair1[p] and hasPair[p]} is sat
@@ -475,6 +522,10 @@ pred notPlayerHasTwoPair[p: Player]{
         c3.rank != c4.rank
     }
 }
+
+/**
+ * Test suite for hasTwoPair
+ */
 test suite for hasTwoPair{
     test expect {
         twoPairTest1: {some p: Player | playerHasTwoPair1[p] and hasTwoPair[p]} is sat
@@ -515,6 +566,10 @@ pred notPlayerHasThreeOfAKind[p: Player]{
         c2.rank != c3.rank
     }
 }
+
+/**
+ * Test suite for hasThreeOfAKind
+ */
 test suite for hasThreeOfAKind{
     test expect {
         threeOfAKindTest1: {some p: Player | playerHasThreeOfAKind1[p] and hasThreeOfAKind[p]} is sat
@@ -548,6 +603,10 @@ pred notPlayerHasFourOfAKind[p: Player]{
         c3.rank != c4.rank
     }
 }
+
+/**
+ * Test suite for hasFourOfAKind
+ */
 test suite for hasFourOfAKind{
     test expect {
         fourOfAKindTest1: {some p: Player | playerHasFourOfAKind[p] and hasFourOfAKind[p]} is sat
@@ -582,6 +641,10 @@ pred notPlayerHasFullHouse[p: Player]{
         c4.rank != c5.rank
     }
 }
+
+/**
+ * Test suite for hasFullHouse
+ */
 test suite for hasFullHouse{
     assert hasThreeOfAKind is necessary for hasFullHouse
     assert hasPair is necessary for hasFullHouse
@@ -652,6 +715,10 @@ pred notplayerHasStraight2[p: Player]{
         c4.rank.value = 2
     }
 }
+
+/**
+ * Test suite for hasStraight
+ */
 test suite for hasStraight{
     test expect {
         straightTest1: {some p: Player | playerHasStraight1[p] and hasStraight[p]} is sat
@@ -692,6 +759,9 @@ pred notPlayerHasFlush1[p: Player]{
     }
 }
 
+/**
+ * Test suite for hasFlush
+ */
 test suite for hasFlush{
     test expect {
         flushTest1: {some p: Player | playerHasFlush1[p] and hasFlush[p]} is sat
@@ -700,6 +770,9 @@ test suite for hasFlush{
 }
 
 //Straight Flush
+/**
+ * Test suite for hasStraightFlush
+ */
 test suite for hasStraightFlush{
     assert hasStraight is necessary for hasStraightFlush
     assert hasFlush is necessary for hasStraightFlush
@@ -750,6 +823,10 @@ pred notPlayerHasRoyalFlush[p: Player]{
         c4.suit != c5.suit
     }
 }
+
+/**
+ * Test suite for hasRoyalFlush
+ */
 test suite for hasRoyalFlush{
     assert hasStraightFlush is necessary for hasRoyalFlush
     test expect {
@@ -771,6 +848,10 @@ pred hasHighCard1[p: Player]{
     not hasStraightFlush[p]
     not hasRoyalFlush[p]
 }
+
+/**
+ * Test suite for hasHighCard
+ */
 test suite for hasHighCard{
     test expect {
         highCardTest1: {some p : Player | hasHighCard1[p] and hasHighCard[p]} is sat
@@ -835,6 +916,9 @@ pred incorrectEvaluateHands3{
     }
 }
 
+/**
+ * Test suite for evaluateHands
+ */
 test suite for evaluateHands{
     test expect {
         evaluateHandsTest1: {correctEvaluateHands1 and evaluateHands} is sat
