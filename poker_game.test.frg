@@ -3,14 +3,14 @@
 open "poker_game.frg"
 
 pred dealCardsTest1{
-    all p: Player | some disj c1, c2: Card|{
+    all p: Player | some disj c1, c2: Card | {
         c1 in p.hand.cards
         c2 in p.hand.cards
     }
 }
 
 pred dealCardsTest2{
-    all p: Player | some c1, c2: Card |{
+    all p: Player | some c1, c2: Card | {
         c1 = c2
         c1 in p.hand.cards
         c2 in p.hand.cards
@@ -18,7 +18,7 @@ pred dealCardsTest2{
 }
 
 pred dealCardsTest3{
-    all p: Player | some c1, c2, c3: Card |{
+    all p: Player | some c1, c2, c3: Card | {
         c1 in p.hand.cards
         c2 in p.hand.cards
         c3 in p.hand.cards
@@ -52,14 +52,14 @@ pred playerGoodBet{
     all p: Player | p.bet = 0
 }
 
-pred goodRoundState[s: RoundState]{
+pred goodRoundState[s: RoundState] {
     s.highestBet = 0
     s.board = none
     s.highestBet = 0
     s.pot = 0
 }
 
-pred badRoundState[s: RoundState]{
+pred badRoundState[s: RoundState] {
     s.highestBet = 3
     s.board = none
     s.highestBet = 0
@@ -69,7 +69,7 @@ pred badRoundState[s: RoundState]{
 /**
  * Test suite for the initRound predicate
  */
-test suite for initRound{
+test suite for initRound {
     test expect {
         t11: {some r: RoundState | playersChipsGood and goodRoundState[r] and initRound[r]} is sat
         t22: {some r: RoundState | playersChipsBad and goodRoundState[r] and initRound[r]} is unsat
@@ -77,28 +77,29 @@ test suite for initRound{
     }
 }
 
-pred winnerRoundState1Player[r: RoundState]{
+pred winnerRoundState1Player[r: RoundState] {
     one p1 :Player | p1 in r.players and #(r.players) = 1
     r = postRiver
 }
-pred winnerRoundState2Players[r: RoundState]{
-    some disj p1, p2 :Player | {
-    p1 in r.players 
-    p2 in r.players
-    #(r.players) = 2
-    r = postRiver
-    p1.hand.score > p2.hand.score
+
+pred winnerRoundState2Players[r: RoundState] {
+    some disj p1, p2 : Player | {
+        p1 in r.players 
+        p2 in r.players
+        #(r.players) = 2
+        r = postRiver
+        p1.hand.score > p2.hand.score
     }
 }
 
-pred badWinnerRoundState[r: RoundState]{
-    some disj p1, p2 :Player | {
-    p1 in r.players 
-    p2 in r.players
-    #(r.players) = 2
-    r = postRiver
-    p1.chips = p1.chips + r.pot
-    p2.hand.score > p1.hand.score
+pred badWinnerRoundState[r: RoundState] {
+    some disj p1, p2 : Player | {
+        p1 in r.players 
+        p2 in r.players
+        #(r.players) = 2
+        r = postRiver
+        p1.chips = p1.chips + r.pot
+        p2.hand.score > p1.hand.score
     }
 }
 
@@ -112,30 +113,32 @@ test suite for winner {
         t3winner: {some r: RoundState | badWinnerRoundState[r] and winner[r]} is unsat
     }
 }
-pred canPlay1[r: RoundState]{
+
+pred canPlay1[r: RoundState] {
     some p: Player | {
-    p in r.players
-    p.chips > 0
-    r.turn = p
+        p in r.players
+        p.chips > 0
+        r.turn = p
     }
-
 }
 
-pred notHisTurn[r: RoundState]{
-    some p: Player | {
-    p in r.players
-    r.turn != p
-}}
-
-pred notInPlayers[r: RoundState]{
-    some p: Player | not p in r.players
+pred notHisTurn[r: RoundState] {
+    some p : Player | {
+        p in r.players
+        r.turn != p
+    }
 }
 
-pred notEnoughChips[r: RoundState]{
-    some p: Player | {
-    p in r.players
-    p.chips = 0
-}}
+pred notInPlayers[r: RoundState] {
+    some p : Player | not p in r.players
+}
+
+pred notEnoughChips[r: RoundState] {
+    some p : Player | {
+        p in r.players
+        p.chips = 0
+    }
+}
 
 /**
  * Test suite for the canPlay predicate
@@ -149,17 +152,19 @@ test suite for canPlay {
     }
 }
 
-pred validTurn1[r: RoundState]{
+pred validTurn1[r: RoundState] {
     some p: Player | {
-    p in r.players
-    p.bet = r.highestBet
-}}
+        p in r.players
+        p.bet = r.highestBet
+    }
+}
 
-pred notValidTurn1[r: RoundState]{
-    some p: Player |{
-    p in r.players
-    p.bet > r.highestBet
-}}
+pred notValidTurn1[r: RoundState] {
+    some p: Player | {
+        p in r.players
+        p.bet > r.highestBet
+    }
+}
 
 /**
  * Test suite for the validTurn predicate
@@ -175,25 +180,27 @@ test suite for validTurn {
     }
 }
 
-pred preFlopToPostFlop[pre, post: RoundState]{
+pred preFlopToPostFlop[pre, post: RoundState] {
     some disj c1, c2, c3: Card {
-    pre = preFlop
-    pre.next = post
-    post = postFlop
-    pre.board = none
-    #(post.board) = 3
-}}
+        pre = preFlop
+        pre.next = post
+        post = postFlop
+        pre.board = none
+        #(post.board) = 3
+    }
+}
 
-pred badPreFlopToPostFlop[pre, post: RoundState]{
+pred badPreFlopToPostFlop[pre, post: RoundState] {
     some disj c1, c2, c3: Card {
-    pre = preFlop
-    pre.next = post
-    post = postFlop
-    pre.board = none
-    #(post.board) = 1
-}}
+        pre = preFlop
+        pre.next = post
+        post = postFlop
+        pre.board = none
+        #(post.board) = 1
+    }
+}
 
-pred postFlopToPostTurn[pre, post: RoundState]{
+pred postFlopToPostTurn[pre, post: RoundState] {
     pre = postFlop
     pre.next = post
     post = postTurn
@@ -201,7 +208,7 @@ pred postFlopToPostTurn[pre, post: RoundState]{
     #(post.board) = 4
 }
 
-pred badPostFlopToPostTurn[pre, post: RoundState]{
+pred badPostFlopToPostTurn[pre, post: RoundState] {
     pre = postFlop
     pre.next = post
     post = postTurn
@@ -209,7 +216,7 @@ pred badPostFlopToPostTurn[pre, post: RoundState]{
     #(post.board) = 2
 }
 
-pred postTurnToPostRiver[pre, post: RoundState]{
+pred postTurnToPostRiver[pre, post: RoundState] {
     pre = postTurn
     pre.next = post
     post = postRiver
@@ -217,7 +224,7 @@ pred postTurnToPostRiver[pre, post: RoundState]{
     #(post.board) = 5
 }
 
-pred badPostTurnToPostRiver[pre, post: RoundState]{
+pred badPostTurnToPostRiver[pre, post: RoundState] {
     pre = postTurn
     pre.next = post
     post = postRiver
@@ -240,22 +247,19 @@ test suite for validTransition {
     }
 }
 
-
-
 pred checkingPlayer {
     some p: Player | some s : RoundState | {
-    p in s.players
-    p.bet = 3
-    s.highestBet = 3
+        p in s.players
+        p.bet = 3
+        s.highestBet = 3
     }
-    
 }
 
 pred notCheckingPlayer {
     some p: Player | some s : RoundState | {
-    p in s.players
-    p.bet = 3
-    s.highestBet = 4
+        p in s.players
+        p.bet = 3
+        s.highestBet = 4
     }
 }
 
@@ -293,15 +297,17 @@ test suite for playerFolds {
 
 pred raisingPlayer {
     some p: Player | some s : RoundState | {
-    p in s.players
-    p.bet > s.highestBet
-}}
+        p in s.players
+        p.bet > s.highestBet
+    }
+}
 
 pred notRaisingPlayer {
     some p: Player | some s : RoundState | {
-    p in s.players
-    p.bet < s.highestBet
-}}
+        p in s.players
+        p.bet < s.highestBet
+    }
+}
 
 /**
  * Test suite for playerRaises
@@ -314,15 +320,17 @@ test suite for playerRaises {
 }
 
 pred callingPlayer {
-    some p: Player | some s : RoundState | 
-    p in s.players
-    p.bet = s.highestBet
+    some p: Player | some s : RoundState | {
+        p in s.players
+        p.bet = s.highestBet
+    }
 }
 
 pred notCallingPlayer {
-    some p: Player | some s : RoundState | 
-    p in s.players
-    p.bet != s.highestBet
+    some p: Player | some s : RoundState | {
+        p in s.players
+        p.bet != s.highestBet
+    }
 }
 
 /**
@@ -334,24 +342,27 @@ test suite for playerCalls {
         t2: {notCallingPlayer and playerCalls} is unsat
     }
 }
+
 pred allInPlayer {
-    some p: Player | some s : RoundState | 
-    p in s.players
-    p.bet = 4
-    p.chips = 0
+    some p: Player | some s : RoundState | {
+        p in s.players
+        p.bet = 4
+        p.chips = 0
+    }
 }
 
 pred notAllInPlayer {
-    some p: Player | some s : RoundState | 
-    p in s.players
-    p.bet = 4
-    p.chips = 5
+    some p: Player | some s : RoundState | {
+        p in s.players
+        p.bet = 4
+        p.chips = 5
+    }
 }
 
 /**
  * Test suite for playerAllIns
  */
-test suite for playerAllIns{
+test suite for playerAllIns {
     test expect {
         t1: {allInPlayer and playerAllIns} is sat
         t2: {notAllInPlayer and playerAllIns} is unsat
@@ -361,7 +372,7 @@ test suite for playerAllIns{
 /**
  * Test suite for playerAction predicate
  */
-test suite for playerAction{
+test suite for playerAction {
     assert playerFolds is sufficient for playerAction
     assert playerChecks is sufficient for playerAction
     assert playerRaises is sufficient for playerAction
@@ -372,35 +383,39 @@ test suite for playerAction{
 /**
  * Test suite for the traces predicate
  */
-test suite for traces{
+test suite for traces {
 }
 
-pred sameCardInDeck{
+pred sameCardInDeck {
     some c1, c2: Card | some r: RoundState | {
         c1 = c2
         c1 in r.deck
         c2 in r.deck
-}}
+    }
+}
 
-pred cardInBoardAndDeck{
+pred cardInBoardAndDeck {
     some c: Card | some r: RoundState | {
         c in r.board
         c in r.deck
-}}
+    }
+}
 
-pred cardInHandAndDeck{
+pred cardInHandAndDeck {
     some c: Card | some p: Player | some r: RoundState | {
         c in p.hand.cards
         c in r.deck
-}}
+    }
+}
 
-pred cardInHandAndBoard{
+pred cardInHandAndBoard {
     some c: Card | some p: Player | some r: RoundState | {
         c in p.hand.cards
         c in r.board
-}}
+    }
+}
 
-pred wellformedCards1{
+pred wellformedCards1 {
     all r: RoundState | some c: Card | {
         c in r.deck => not c in r.board => {
             some p: Player | {not c in p.hand.cards}
@@ -411,7 +426,7 @@ pred wellformedCards1{
 /**
  * Test suite for wellformedCards predicate
  */
-test suite for wellformedCards{
+test suite for wellformedCards {
     test expect {
         wellformedt1: {sameCardInDeck and wellformedCards} is unsat
         wellformedt2: {cardInBoardAndDeck and wellformedCards} is unsat
@@ -421,7 +436,7 @@ test suite for wellformedCards{
     }
 }
 
-pred playerRotation1{
+pred playerRotation1 {
     some disj p1, p2: Player | some r: RoundState | {
         p1 in r.players
         p2 in r.players
@@ -430,7 +445,7 @@ pred playerRotation1{
     }
 }
 
-pred badPlayerRotation1{
+pred badPlayerRotation1 {
     some disj p1, p2, p3: Player | some r: RoundState | {
         p1 in r.players
         p2 in r.players
@@ -443,14 +458,14 @@ pred badPlayerRotation1{
 /**
  * Test suite for playerRotation predicate
  */
-test suite for playerRotation{
+test suite for playerRotation {
     test expect {
         t1: {playerRotation1 and playerRotation} is sat
         t2: {badPlayerRotation1 and playerRotation} is unsat
     }
 }
 
-pred playerHasPair1[p: Player]{
+pred playerHasPair1[p: Player] {
     some r: RoundState | some disj c1, c2: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -459,7 +474,7 @@ pred playerHasPair1[p: Player]{
     }
 }
 
-pred playerHasPair2[p: Player]{
+pred playerHasPair2[p: Player] {
     some r: RoundState | some disj c1, c2: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -468,7 +483,7 @@ pred playerHasPair2[p: Player]{
     }
 }
 
-pred playerHasNoPair[p: Player]{
+pred playerHasNoPair[p: Player] {
     some r: RoundState | some disj c1, c2: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -480,7 +495,7 @@ pred playerHasNoPair[p: Player]{
 /**
  * Test suite for hasPair
  */
-test suite for hasPair{
+test suite for hasPair {
     test expect {
         pairTest1: {some p: Player | playerHasPair1[p] and hasPair[p]} is sat
         pairTest3: {some p: Player | playerHasPair2[p] and hasPair[p]} is sat
@@ -488,7 +503,7 @@ test suite for hasPair{
     }
 }
 
-pred playerHasTwoPair1[p: Player]{
+pred playerHasTwoPair1[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -500,7 +515,7 @@ pred playerHasTwoPair1[p: Player]{
     }
 }
 
-pred playerHasTwoPair2[p: Player]{
+pred playerHasTwoPair2[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -511,7 +526,8 @@ pred playerHasTwoPair2[p: Player]{
         c3.rank = c4.rank
     }
 }
-pred notPlayerHasTwoPair[p: Player]{
+
+pred notPlayerHasTwoPair[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -526,7 +542,7 @@ pred notPlayerHasTwoPair[p: Player]{
 /**
  * Test suite for hasTwoPair
  */
-test suite for hasTwoPair{
+test suite for hasTwoPair {
     test expect {
         twoPairTest1: {some p: Player | playerHasTwoPair1[p] and hasTwoPair[p]} is sat
         twoPairTest2: {some p: Player | playerHasTwoPair2[p] and hasTwoPair[p]} is sat
@@ -534,7 +550,7 @@ test suite for hasTwoPair{
     }
 }
 
-pred playerHasThreeOfAKind1[p: Player]{
+pred playerHasThreeOfAKind1[p: Player] {
     some r: RoundState | some disj c1, c2, c3: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -545,7 +561,7 @@ pred playerHasThreeOfAKind1[p: Player]{
     }
 }
 
-pred playerHasThreeOfAKind2[p: Player]{
+pred playerHasThreeOfAKind2[p: Player] {
     some r: RoundState | some disj c1, c2, c3: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -556,7 +572,7 @@ pred playerHasThreeOfAKind2[p: Player]{
     }
 }
 
-pred notPlayerHasThreeOfAKind[p: Player]{
+pred notPlayerHasThreeOfAKind[p: Player] {
     some r: RoundState | some disj c1, c2, c3: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -570,7 +586,7 @@ pred notPlayerHasThreeOfAKind[p: Player]{
 /**
  * Test suite for hasThreeOfAKind
  */
-test suite for hasThreeOfAKind{
+test suite for hasThreeOfAKind {
     test expect {
         threeOfAKindTest1: {some p: Player | playerHasThreeOfAKind1[p] and hasThreeOfAKind[p]} is sat
         threeOfAKindTest2: {some p: Player | playerHasThreeOfAKind2[p] and hasThreeOfAKind[p]} is sat
@@ -578,7 +594,7 @@ test suite for hasThreeOfAKind{
     }
 }
 
-pred playerHasFourOfAKind[p: Player]{
+pred playerHasFourOfAKind[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -591,7 +607,7 @@ pred playerHasFourOfAKind[p: Player]{
     }
 }
 
-pred notPlayerHasFourOfAKind[p: Player]{
+pred notPlayerHasFourOfAKind[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -607,14 +623,14 @@ pred notPlayerHasFourOfAKind[p: Player]{
 /**
  * Test suite for hasFourOfAKind
  */
-test suite for hasFourOfAKind{
+test suite for hasFourOfAKind {
     test expect {
         fourOfAKindTest1: {some p: Player | playerHasFourOfAKind[p] and hasFourOfAKind[p]} is sat
         fourOfAKindTest2: {some p: Player | notPlayerHasFourOfAKind[p] and hasFourOfAKind[p]} is unsat
     }
 }
 
-pred playerHasFullHouse1[p: Player]{
+pred playerHasFullHouse1[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -628,7 +644,7 @@ pred playerHasFullHouse1[p: Player]{
     }
 }
 
-pred notPlayerHasFullHouse[p: Player]{
+pred notPlayerHasFullHouse[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -645,7 +661,7 @@ pred notPlayerHasFullHouse[p: Player]{
 /**
  * Test suite for hasFullHouse
  */
-test suite for hasFullHouse{
+test suite for hasFullHouse {
     assert hasThreeOfAKind is necessary for hasFullHouse
     assert hasPair is necessary for hasFullHouse
     test expect {
@@ -656,7 +672,7 @@ test suite for hasFullHouse{
 
 //Straight
 
-pred playerHasStraight1[p: Player]{
+pred playerHasStraight1[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -671,7 +687,7 @@ pred playerHasStraight1[p: Player]{
     }
 }
 
-pred playerHasStraight2[p: Player]{
+pred playerHasStraight2[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -686,7 +702,7 @@ pred playerHasStraight2[p: Player]{
     }
 }
 
-pred notPlayerHasStraight1[p: Player]{
+pred notPlayerHasStraight1[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -701,7 +717,7 @@ pred notPlayerHasStraight1[p: Player]{
     }
 }
 
-pred notplayerHasStraight2[p: Player]{
+pred notplayerHasStraight2[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -719,7 +735,7 @@ pred notplayerHasStraight2[p: Player]{
 /**
  * Test suite for hasStraight
  */
-test suite for hasStraight{
+test suite for hasStraight {
     test expect {
         straightTest1: {some p: Player | playerHasStraight1[p] and hasStraight[p]} is sat
         straightTest2: {some p: Player | playerHasStraight2[p] and hasStraight[p]} is sat
@@ -729,7 +745,7 @@ test suite for hasStraight{
 }
 
 //Flush
-pred playerHasFlush1[p: Player]{
+pred playerHasFlush1[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -744,7 +760,7 @@ pred playerHasFlush1[p: Player]{
     }
 }
 
-pred notPlayerHasFlush1[p: Player]{
+pred notPlayerHasFlush1[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -762,18 +778,17 @@ pred notPlayerHasFlush1[p: Player]{
 /**
  * Test suite for hasFlush
  */
-test suite for hasFlush{
+test suite for hasFlush {
     test expect {
         flushTest1: {some p: Player | playerHasFlush1[p] and hasFlush[p]} is sat
         flushTest2: {some p: Player | notPlayerHasFlush1[p] and hasFlush[p]} is unsat
     }
 }
 
-//Straight Flush
 /**
  * Test suite for hasStraightFlush
  */
-test suite for hasStraightFlush{
+test suite for hasStraightFlush {
     assert hasStraight is necessary for hasStraightFlush
     assert hasFlush is necessary for hasStraightFlush
     test expect {
@@ -782,9 +797,7 @@ test suite for hasStraightFlush{
     }
 }
 
-//Royal Flush
-
-pred playerHasRoyalFlush[p: Player]{
+pred playerHasRoyalFlush[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -804,7 +817,7 @@ pred playerHasRoyalFlush[p: Player]{
     }
 }
 
-pred notPlayerHasRoyalFlush[p: Player]{
+pred notPlayerHasRoyalFlush[p: Player] {
     some r: RoundState | some disj c1, c2, c3, c4, c5: Card | {
         p in r.players
         c1 in p.hand.cards
@@ -827,7 +840,7 @@ pred notPlayerHasRoyalFlush[p: Player]{
 /**
  * Test suite for hasRoyalFlush
  */
-test suite for hasRoyalFlush{
+test suite for hasRoyalFlush {
     assert hasStraightFlush is necessary for hasRoyalFlush
     test expect {
         royalFlushTest1: {some p: Player | playerHasRoyalFlush[p] and hasRoyalFlush[p]} is sat
@@ -837,7 +850,7 @@ test suite for hasRoyalFlush{
 }
 
 //High Card
-pred hasHighCard1[p: Player]{
+pred hasHighCard1[p: Player] {
     not hasPair[p]
     not hasTwoPair[p]
     not hasThreeOfAKind[p]
@@ -852,7 +865,7 @@ pred hasHighCard1[p: Player]{
 /**
  * Test suite for hasHighCard
  */
-test suite for hasHighCard{
+test suite for hasHighCard {
     test expect {
         highCardTest1: {some p : Player | hasHighCard1[p] and hasHighCard[p]} is sat
         highCardTest2: {some p : Player | hasPair[p] and hasHighCard[p]} is unsat
@@ -868,7 +881,7 @@ test suite for hasHighCard{
 }
 
 //EvaluateHands
-pred correctEvaluateHands1{
+pred correctEvaluateHands1 {
     some r: RoundState | some p: Player | {
         p in r.players
         p.hand.score = -4
@@ -876,7 +889,7 @@ pred correctEvaluateHands1{
     }
 }   
 
-pred correctEvaluateHands2{
+pred correctEvaluateHands2 {
     some r: RoundState | some p: Player | {
         p in r.players
         p.hand.score = -3
@@ -884,7 +897,7 @@ pred correctEvaluateHands2{
     }
 }
 
-pred correctEvaluateHands3{
+pred correctEvaluateHands3 {
     some r: RoundState | some p: Player | {
         p in r.players
         p.hand.score = -2
@@ -892,7 +905,7 @@ pred correctEvaluateHands3{
     }
 }
 
-pred incorrectEvaluateHands1{
+pred incorrectEvaluateHands1 {
     some r: RoundState | some p: Player | {
         p in r.players
         p.hand.score = 0
@@ -900,7 +913,7 @@ pred incorrectEvaluateHands1{
     }
 }
 
-pred incorrectEvaluateHands2{
+pred incorrectEvaluateHands2 {
     some r: RoundState | some p: Player | {
         p in r.players
         p.hand.score = 1
@@ -908,7 +921,7 @@ pred incorrectEvaluateHands2{
     }
 }
 
-pred incorrectEvaluateHands3{
+pred incorrectEvaluateHands3 {
     some r: RoundState | some p: Player | {
         p in r.players
         p.hand.score = 2
@@ -919,7 +932,7 @@ pred incorrectEvaluateHands3{
 /**
  * Test suite for evaluateHands
  */
-test suite for evaluateHands{
+test suite for evaluateHands {
     test expect {
         evaluateHandsTest1: {correctEvaluateHands1 and evaluateHands} is sat
         evaluateHandsTest2: {correctEvaluateHands2 and evaluateHands} is sat
