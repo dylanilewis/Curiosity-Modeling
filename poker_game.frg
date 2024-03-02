@@ -69,7 +69,7 @@ pred dealCards {
 }
 
 /**
-* This predicate implements the logic of initializing a round of poker. It ensures the board is empty,
+* This predicate implements the logic of initializing a round of poker. It ensures the board is empty, the highest bet and pot are 0, 
 * the players are dealt cards, the players have the correct amount of chips, and the turn is set to the first player.
 * Param: r - a round state
 */
