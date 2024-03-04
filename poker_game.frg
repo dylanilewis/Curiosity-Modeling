@@ -62,15 +62,16 @@ pred uniqueCards {
 */
 pred dealCards {
     all p : Player | {
-        some c1,c2 : Card | {
+        some c1, c2 : Card | {
             p.hand.cards = c1 + c2 implies {c1 != c2}
-            }
+        }
         #(p.hand.cards) = 2
         //all players have two different cards. Cards cannot be repeated among players
         all disj p1, p2 : Player | {
             p1.hand.cards != p2.hand.cards
         }
-}}
+    }
+}
 
 /**
 * This predicate implements the logic of initializing a round of poker. It ensures the board is empty, the highest bet and pot are 0, 
@@ -136,24 +137,24 @@ pred validTransition[pre : RoundState, post : RoundState] {
         (pre = postFlop and post = postTurn) implies (post.board = pre.board + c4 and #(post.board) = 4)
         (pre = postTurn and post = postRiver) implies (post.board = pre.board + c5 and #(post.board) = 5)
     }
-    // pre = preFlop implies {
-    //     pre.next = postFlop
-    //     post = postFlop
-    //     #{c : Card | c in pre.board} = 0
-    //     #{c : Card | c in post.board} = 3
-    // }
-    // pre = postFlop implies {
-    //     pre.next = postTurn
-    //     post = postTurn
-    //     #{c : Card | c in pre.board} = 3
-    //     #{c : Card | c in post.board} = 4
-    // }
-    // pre = postTurn implies {
-    //     pre.next = postRiver
-    //     post = postRiver
-    //     #{c : Card | c in pre.board} = 4
-    //     #{c : Card | c in post.board} = 5
-    // }
+    pre = preFlop implies {
+        pre.next = postFlop
+        post = postFlop
+        #{c : Card | c in pre.board} = 0
+        #{c : Card | c in post.board} = 3
+    }
+    pre = postFlop implies {
+        pre.next = postTurn
+        post = postTurn
+        #{c : Card | c in pre.board} = 3
+        #{c : Card | c in post.board} = 4
+    }
+    pre = postTurn implies {
+        pre.next = postRiver
+        post = postRiver
+        #{c : Card | c in pre.board} = 4
+        #{c : Card | c in post.board} = 5
+    }
 }
 
 /**
@@ -461,11 +462,9 @@ inst optimize_rank {
 run {
     wellformedCards
     playerRotation
-    /*
-    some p : Player | {
-        evaluateHand[p]
-    }
-    */
+    // some p : Player | {
+    //     evaluateHand[p]
+    // }
     traces
 } for exactly 12 Card, 2 Player, 4 Int for optimize_rank
 
